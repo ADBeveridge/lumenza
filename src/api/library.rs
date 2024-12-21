@@ -32,7 +32,7 @@ pub struct Library {
 impl Default for Library {
     fn default() -> Self {
         Self {
-            db: database::Database::new("please_delete").unwrap(),
+            db: database::Database::open("please_delete").unwrap(),
             fs: filesystem::Filesystem::default(),
         }
     }

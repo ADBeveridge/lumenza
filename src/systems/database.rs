@@ -34,15 +34,15 @@ pub struct Database {
 
 impl Database {
     /// Creates a database object, and returns it with a open connection
-    pub(crate) fn new<P: AsRef<Path>>(path: P) -> Result<Self, OsplError> {
+    pub fn open<P: AsRef<Path>>(path: P) -> Result<Self, OsplError> {
         Ok(Database {
             connection: Connection::open(path.as_ref()).unwrap(),
         })
     }
 
     /// Create the database object and file, and inserts the main structure
-    pub(crate) fn create<P: AsRef<Path>>(path: P) -> Result<Self, OsplError> {
-        let db = Self::new(path)?;
+    pub fn create<P: AsRef<Path>>(path: P) -> Result<Self, OsplError> {
+        let db = Self::open(path)?;
 
         let sql = sql_schema::sql_schema();
         let sql = sql.as_str();

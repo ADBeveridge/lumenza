@@ -17,12 +17,15 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-use std::path::{PathBuf, Path};
+
+use std::path::{Path, PathBuf};
+
 use crate::error::OsplError;
+use crate::systems::database;
 
 #[derive(Default)]
 pub struct Filesystem {
-    library_path: PathBuf,
+    config_path: PathBuf,
     pictures_path: PathBuf,
     thumbnails_path: PathBuf,
     database_path: PathBuf,
@@ -30,21 +33,32 @@ pub struct Filesystem {
 
 // Static Methods
 impl Filesystem {
-    /// Creates a filesystem object, and returns it.
-    pub fn new<P: AsRef<Path>>(
-        library: P,
-        thumbnails: P,
-        pictures: P,
-        database: P,
-    ) -> Result<Self, OsplError> {
+    /// Opens a filesystem object, and returns it.
+    pub fn open<P: AsRef<Path>>(config_path: P, thumbnails: P, pictures: P, database: P) -> Result<Self, OsplError> {
         return Ok(Filesystem {
-            library_path: library.as_ref().to_path_buf(),
+            config_path: config_path.as_ref().to_path_buf(),
             thumbnails_path: thumbnails.as_ref().to_path_buf(),
             pictures_path: pictures.as_ref().to_path_buf(),
             database_path: database.as_ref().to_path_buf(),
         });
     }
-    //pub fn create_folder<P: AsRef<Path>>(path: P) -> Result<Self, OsplError>
+    pub fn create<P: AsRef<Path>>(
+        config: P,
+        thumbnails: P,
+        pictures: P,
+        database: P,
+    ) -> Result<Self, OsplError> {
+        // Create empty stuff for a new library.
+        std::fs::create_dir_all(PathBuf::from(thumbnails.as_ref())).unwrap();
+        std::fs::create_dir_all(PathBuf::from(pictures.as_ref())).unwrap();
+        std::fs::File::create(config.as_ref()).unwrap();
+        database::Database::create(database.as_ref()).unwrap();
+
+        // Now that the folders are there, we can create the whole thing.
+        let fs = Self::open(config, thumbnails, pictures, database).unwrap();
+
+        Ok(fs)
+    }
 }
 
 // Instance Methods
