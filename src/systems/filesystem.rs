@@ -17,16 +17,18 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+use std::path::{PathBuf, Path};
+use crate::error::OsplError;
 
-/// The Filesystem structure manages every file and directory in the library.
 #[derive(Default)]
 pub struct Filesystem {
-    library_path: Pathbuf,
+    library_path: PathBuf,
     pictures_path: PathBuf,
     thumbnails_path: PathBuf,
     database_path: PathBuf,
 }
 
+// Static Methods
 impl Filesystem {
     /// Creates a filesystem object, and returns it.
     pub fn new<P: AsRef<Path>>(
@@ -42,9 +44,10 @@ impl Filesystem {
             database_path: database.as_ref().to_path_buf(),
         });
     }
+    //pub fn create_folder<P: AsRef<Path>>(path: P) -> Result<Self, OsplError>
 }
 
-// Getters
+// Instance Methods
 impl Filesystem {
     /// Returns the path on filesystem to the pictures path in the library
     pub fn get_pictures_path(&self) -> PathBuf {

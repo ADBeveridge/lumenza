@@ -18,8 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use super::OsplError;
-use crate::element::traits::ElementDatabase;
+use crate::error::OsplError;
 
 use rusqlite::Connection;
 use std::path::Path;
@@ -37,7 +36,7 @@ impl Database {
     /// Creates a database object, and returns it with a open connection
     pub(crate) fn new<P: AsRef<Path>>(path: P) -> Result<Self, OsplError> {
         Ok(Database {
-            connection: Connection::open(path.as_ref())?,
+            connection: Connection::open(path.as_ref()).unwrap(),
         })
     }
 
@@ -48,58 +47,8 @@ impl Database {
         let sql = sql_schema::sql_schema();
         let sql = sql.as_str();
 
-        db.connection.execute_batch(sql)?;
+        db.connection.execute_batch(sql).unwrap();
         Ok(db)
     }
 }
 
-impl Database {
-    /// Inserts an element into the database
-    ///
-    /// If db.insert(object) is called, it will call object.insert_into(database struct)
-    pub(crate) fn insert(&self, object: &dyn ElementDatabase) -> Result<u32, OsplError> {
-        object.insert_into(self)
-    }
-
-    /// Check if an element is in the database.
-    pub(crate) fn check_existence(&self, object: &dyn ElementDatabase) -> Result<bool, OsplError> {
-        object.check_existence(self)
-    }
-
-    /// Update an element in the database.
-    #[allow(dead_code)]
-    pub(crate) fn update(&self, object: &dyn ElementDatabase) -> Result<(), OsplError> {
-        object.update(self)?;
-        Ok(())
-    }
-
-    /// Gets an element from the database with its id
-    ///
-    /// If db.from_id(object) is called, it will call object.from_id(database struct)
-    pub(crate) fn load_from_id(
-        &self,
-        object: &mut dyn ElementDatabase,
-        id: u32,
-    ) -> Result<(), OsplError> {
-        object.load_from_id(self, id)
-    }
-
-    /// Rename the element in the database
-    ///
-    /// If db.rename(object) is called it will call object.rename(database struct)
-    #[allow(dead_code)]
-    pub(crate) fn rename(
-        &self,
-        object: &dyn ElementDatabase,
-        new_name: &str,
-    ) -> Result<(), OsplError> {
-        object.rename(self, new_name)
-    }
-
-    /// Deletes an element f rom the database with its self.id
-    ///
-    /// If db.delete(object) is called, it will call object.delete(database struct)
-    pub(crate) fn delete(&self, object: &dyn ElementDatabase) -> Result<(), OsplError> {
-        object.delete(self)
-    }
-}

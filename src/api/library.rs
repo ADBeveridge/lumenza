@@ -18,10 +18,25 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use std::fs::File;
-use std::io::{BufWriter, Read};
 use std::path::Path;
-use std::path::PathBuf;
+
+use crate::systems::filesystem;
+use crate::systems::database;
+use crate::error::OsplError;
+
+pub struct Library {
+    pub fs: filesystem::Filesystem, 
+    pub db: database::Database,
+}
+
+impl Default for Library {
+    fn default() -> Self {
+        Self {
+            db: database::Database::new("please_delete").unwrap(),
+            fs: filesystem::Filesystem::default(),
+        }
+    }
+}
 
 impl Library {
     /// This function will create a folder at the given path, create the database file, and create the filesystem object.
