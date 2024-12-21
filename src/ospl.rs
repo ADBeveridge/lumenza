@@ -22,8 +22,7 @@ pub static VERSION_MAJOR: &str = env!("CARGO_PKG_VERSION_MAJOR");
 pub static VERSION_MINOR: &str = env!("CARGO_PKG_VERSION_MINOR");
 pub static VERSION_REVISION: &str = env!("CARGO_PKG_VERSION_PATCH");
 
-mod database;
-mod filesystem;
+mod systems;
 
 pub mod api;
 pub mod element;
