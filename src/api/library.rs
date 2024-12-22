@@ -29,28 +29,31 @@ pub struct Library {
     pub db: database::Database,
 }
 
-impl Default for Library {
-    fn default() -> Self {
-        Self {
-            db: database::Database::open("please_delete").unwrap(),
-            fs: filesystem::Filesystem::default(),
-        }
-    }
-}
-
 impl Library {
-    /// This function will create a folder at the given path, create the database file, and create the filesystem object.
+    /// This function will create the files at the given paths. 
     pub fn create<P: AsRef<Path>>(
         config: P,
         thumbnails: P,
         pictures: P,
         database: P,
     ) -> Result<Self, OsplError> {
-        unimplemented!()
+        let db = database::Database::create(database.as_ref()).unwrap();
+        let fs = filesystem::Filesystem::create(config, thumbnails, pictures).unwrap();
+        
+        // Return it.
+        Ok(Library {
+            fs: fs,
+            db: db,
+        })
     }
 
     /// Loads an existing ospl Library from a config file.
-    pub fn load<P: AsRef<Path>>(config: P) -> Result<Self, OsplError> {
+    pub fn load<P: AsRef<Path>>(_config: P) -> Result<Self, OsplError> {
+        unimplemented!()
+    }
+
+    /// Deletes the library files
+    pub fn delete<P: AsRef<Path>>(_config: P) -> Result<Self, OsplError> {
         unimplemented!()
     }
 }
