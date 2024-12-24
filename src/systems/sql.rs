@@ -24,27 +24,7 @@ pub fn sql_schema() -> String {
         CREATE TABLE IF NOT EXISTS photos (
             id                      INTEGER NOT NULL UNIQUE,
             filename                TEXT NOT NULL,
-            hash                    BLOB NOT NULL,
-            thumbnail_name          TEXT,
-            width                   INTEGER NOT NULL,
-            height                  INTEGER NOT NULL,
-            missing                 INTEGER NOT NULL,
             PRIMARY KEY(id AUTOINCREMENT)
-        );
-        
-        -- Table where each row represents a tag.
-        CREATE TABLE IF NOT EXISTS tags (
-            id                      INTEGER NOT NULL UNIQUE,
-            name                    TEXT NOT NULL UNIQUE,
-            PRIMARY KEY(id AUTOINCREMENT)
-        );
-        
-        -- Link table between photos and tags.
-        CREATE TABLE IF NOT EXISTS photos_tags_map (
-            containing_tag          INTEGER NOT NULL,
-            contained_photo         INTEGER NOT NULL,
-            FOREIGN KEY(contained_photo) REFERENCES photos(id),
-            FOREIGN KEY(containing_tag) REFERENCES tags(id)
         );
     ";
 

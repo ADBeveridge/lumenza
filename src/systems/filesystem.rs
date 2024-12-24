@@ -31,17 +31,8 @@ pub struct Filesystem {
 
 // Static Methods
 impl Filesystem {
-    /// Loads the file paths into the Filesystem object and returns it.
-    pub fn open<P: AsRef<Path>>(config_path: P, thumbnails: P, pictures: P) -> Result<Self, OsplError> {
-        return Ok(Filesystem {
-            config_path: config_path.as_ref().to_path_buf(),
-            thumbnails_path: thumbnails.as_ref().to_path_buf(),
-            pictures_path: pictures.as_ref().to_path_buf(),
-        });
-    }
-
     // Initialize filsystem structure for library.
-    pub fn create<P: AsRef<Path>>(
+    pub fn new<P: AsRef<Path>>(
         config: P,
         thumbnails: P,
         pictures: P,
@@ -55,6 +46,15 @@ impl Filesystem {
         let fs = Self::open(config, thumbnails, pictures).unwrap();
 
         Ok(fs)
+    }
+
+    /// Loads the file paths into the Filesystem object and returns it.
+    pub fn open<P: AsRef<Path>>(config_path: P, thumbnails: P, pictures: P) -> Result<Self, OsplError> {
+        return Ok(Filesystem {
+            config_path: config_path.as_ref().to_path_buf(),
+            thumbnails_path: thumbnails.as_ref().to_path_buf(),
+            pictures_path: pictures.as_ref().to_path_buf(),
+        });
     }
 }
 

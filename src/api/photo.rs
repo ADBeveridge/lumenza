@@ -17,3 +17,26 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+use std::path::{Path, PathBuf};
+
+use crate::api::library;
+use crate::systems::database;
+use crate::systems::filesystem;
+
+use crate::error::OsplError;
+
+pub struct Photo {
+    pub filename: PathBuf,
+}
+
+impl Photo {
+    pub fn new<P: AsRef<Path>>(library: &library::Library, file: P) -> Result<Self, OsplError> {
+        let photo = Photo {
+            filename: file.as_ref().to_path_buf(),
+        };
+
+        library.db.write_photo(&photo).unwrap();
+        
+        Ok(photo)
+    }
+}
