@@ -24,6 +24,6 @@ mod tests {
 
     #[test]
     fn create_library() {
-        library::Library::create("./default.conf", "./thumbnails/", "pictures", "./database").unwrap();
+        library::Library::create("./tests/example/default.conf", "./tests/example/thumbnails/", "tests/example/pictures", "./tests/example/database").unwrap();
     }
 }
