@@ -22,17 +22,19 @@ use crate::error::Error;
 #[derive(Default)]
 pub struct Filesystem {
     config_path: PathBuf,
-    pictures_path: PathBuf,
+    pictures_paths: Vec<PathBuf>,
     thumbnails_path: PathBuf,
 }
 
 // Static Methods
 impl Filesystem {
     // Initialize filsystem structure for library.
-    pub fn new(config: &Path, thumbnails: &Path, pictures: &Path) -> Result<Self, Error> {
+    pub fn new(config: &Path, thumbnails: &Path, pictures: &Vec<PathBuf>) -> Result<Self, Error> {
         // Create empty stuff for a new library.
         std::fs::create_dir_all(PathBuf::from(thumbnails)).unwrap();
-        std::fs::create_dir_all(PathBuf::from(pictures)).unwrap();
+        for path in pictures {
+            std::fs::create_dir_all(path).unwrap();
+        }
         std::fs::File::create(config).unwrap();
 
         // Now that the files (except the database) are there, we can create the whole thing.
@@ -42,11 +44,11 @@ impl Filesystem {
     }
 
     /// Loads the file paths into the Filesystem object and returns it.
-    pub fn open(config_path: &Path, thumbnails: &Path, pictures: &Path) -> Result<Self, Error> {
+    pub fn open(config_path: &Path, thumbnails: &Path, pictures: &Vec<PathBuf>) -> Result<Self, Error> {
         return Ok(Filesystem {
             config_path: config_path.to_path_buf(),
             thumbnails_path: thumbnails.to_path_buf(),
-            pictures_path: pictures.to_path_buf(),
+            pictures_paths: pictures.clone(),
         });
     }
 }
@@ -59,8 +61,8 @@ impl Filesystem {
     }
 
     /// Returns the path on filesystem to the pictures path in the library
-    pub fn get_pictures_path(&self) -> PathBuf {
-        self.pictures_path.to_path_buf()
+    pub fn get_pictures_path(&self) -> Vec<PathBuf> {
+        self.pictures_paths.clone()
     }
 
     /// Returns the path on filesystem to the thumbnails path in the library

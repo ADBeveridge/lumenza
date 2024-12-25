@@ -34,7 +34,7 @@ mod tests {
         Library::create(
             config.as_path(),
             thumbnails.as_path(),
-            pictures.as_path(),
+            &vec![pictures.clone()],
             database.as_path(),
         )
         .unwrap();
@@ -57,7 +57,7 @@ mod tests {
         let library = Library::create(
             config.as_path(),
             thumbnails.as_path(),
-            pictures.as_path(),
+            &vec![pictures],
             database.as_path(),
         )
         .unwrap();
@@ -77,7 +77,7 @@ mod tests {
         let library = Library::create(
             config.as_path(),
             thumbnails.as_path(),
-            pictures.as_path(),
+            &vec![pictures],
             database.as_path(),
         )
         .unwrap();

@@ -35,7 +35,7 @@ impl Library {
     pub fn create(
         config: &Path,
         thumbnails: &Path,
-        pictures: &Path,
+        pictures: &Vec<PathBuf>,
         database: &Path,
     ) -> Result<Self, Error> {
         let fs = filesystem::Filesystem::new(config, thumbnails, pictures).unwrap();
