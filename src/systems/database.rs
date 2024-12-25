@@ -15,8 +15,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use crate::photo;
 use crate::error::Error;
+use crate::photo;
 
 use rusqlite::Connection;
 use std::path::Path;
@@ -48,12 +48,12 @@ impl Database {
 // Instance Methods
 impl Database {
     pub fn write_photo(&self, photo: &photo::Photo) -> Result<(), Error> {
-        self.connection.execute(
-            "INSERT INTO photos (filename) VALUES (?1)",
-            (
-                &photo.filename.to_str(),
-            ),
-        ).unwrap();
+        self.connection
+            .execute(
+                "INSERT INTO photos (filename) VALUES (?1)",
+                (&photo.filename.to_str(),),
+            )
+            .unwrap();
         Ok(())
     }
 }

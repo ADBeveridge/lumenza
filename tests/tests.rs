@@ -17,7 +17,9 @@
 
 #[cfg(test)]
 mod tests {
-    use lumenza::library;
+    use lumenza::library::Library;
+    use lumenza::photo::Photo;
+    use std::path;
     use tempdir::TempDir;
 
     #[test]
@@ -29,11 +31,38 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        library::Library::create(config.clone(), thumbnails.clone(), pictures.clone(), database.clone()).unwrap();
+        Library::create(
+            config.as_path(),
+            thumbnails.as_path(),
+            pictures.as_path(),
+            database.as_path(),
+        )
+        .unwrap();
 
         assert!(std::fs::exists(config).unwrap());
         assert!(std::fs::exists(thumbnails).unwrap());
         assert!(std::fs::exists(pictures).unwrap());
         assert!(std::fs::exists(database).unwrap());
+    }
+
+    #[test]
+    fn insert_photo() {
+        let dir = TempDir::new("lumenza").unwrap();
+
+        let config = dir.path().join("default.conf");
+        let thumbnails = dir.path().join("thumbnails/");
+        let pictures = dir.path().join("pictures/");
+        let database = dir.path().join("database.sqlite3");
+
+        let library = Library::create(
+            config.as_path(),
+            thumbnails.as_path(),
+            pictures.as_path(),
+            database.as_path(),
+        )
+        .unwrap();
+
+        let image_path = path::Path::new("tests/images/lake.jpg");
+        Photo::new(&library, image_path).unwrap();
     }
 }

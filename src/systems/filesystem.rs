@@ -29,15 +29,11 @@ pub struct Filesystem {
 // Static Methods
 impl Filesystem {
     // Initialize filsystem structure for library.
-    pub fn new<P: AsRef<Path>>(
-        config: P,
-        thumbnails: P,
-        pictures: P,
-    ) -> Result<Self, Error> {
+    pub fn new(config: &Path, thumbnails: &Path, pictures: &Path) -> Result<Self, Error> {
         // Create empty stuff for a new library.
-        std::fs::create_dir_all(PathBuf::from(thumbnails.as_ref())).unwrap();
-        std::fs::create_dir_all(PathBuf::from(pictures.as_ref())).unwrap();
-        std::fs::File::create(config.as_ref()).unwrap();
+        std::fs::create_dir_all(PathBuf::from(thumbnails)).unwrap();
+        std::fs::create_dir_all(PathBuf::from(pictures)).unwrap();
+        std::fs::File::create(config).unwrap();
 
         // Now that the files (except the database) are there, we can create the whole thing.
         let fs = Self::open(config, thumbnails, pictures).unwrap();
@@ -46,11 +42,11 @@ impl Filesystem {
     }
 
     /// Loads the file paths into the Filesystem object and returns it.
-    pub fn open<P: AsRef<Path>>(config_path: P, thumbnails: P, pictures: P) -> Result<Self, Error> {
+    pub fn open(config_path: &Path, thumbnails: &Path, pictures: &Path) -> Result<Self, Error> {
         return Ok(Filesystem {
-            config_path: config_path.as_ref().to_path_buf(),
-            thumbnails_path: thumbnails.as_ref().to_path_buf(),
-            pictures_path: pictures.as_ref().to_path_buf(),
+            config_path: config_path.to_path_buf(),
+            thumbnails_path: thumbnails.to_path_buf(),
+            pictures_path: pictures.to_path_buf(),
         });
     }
 }

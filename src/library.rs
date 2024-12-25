@@ -17,31 +17,28 @@
 
 use std::path::Path;
 
-use crate::systems::filesystem;
-use crate::systems::database;
 use crate::error::Error;
+use crate::systems::database;
+use crate::systems::filesystem;
 
 pub struct Library {
-    pub fs: filesystem::Filesystem, 
+    pub fs: filesystem::Filesystem,
     pub db: database::Database,
 }
 
 impl Library {
-    /// This function will create the files at the given paths. 
-    pub fn create<P: AsRef<Path>>(
-        config: P,
-        thumbnails: P,
-        pictures: P,
-        database: P,
+    /// This function will create the files at the given paths.
+    pub fn create(
+        config: &Path,
+        thumbnails: &Path,
+        pictures: &Path,
+        database: &Path,
     ) -> Result<Self, Error> {
         let fs = filesystem::Filesystem::new(config, thumbnails, pictures).unwrap();
-        let db = database::Database::new(database.as_ref()).unwrap();
-        
+        let db = database::Database::new(database).unwrap();
+
         // Return it.
-        Ok(Library {
-            fs: fs,
-            db: db,
-        })
+        Ok(Library { fs: fs, db: db })
     }
 
     /// Loads an existing ospl Library from a config file.

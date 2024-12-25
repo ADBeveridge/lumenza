@@ -14,19 +14,35 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+use std::env;
 use std::path::{Path, PathBuf};
 
-use crate::library;
 use crate::error::Error;
+use crate::error::InternalError;
+use crate::library;
 
 pub struct Photo {
     pub filename: PathBuf,
 }
 
 impl Photo {
-    pub fn new<P: AsRef<Path>>(library: &library::Library, file: P) -> Result<Self, Error> {
+    pub fn new(library: &library::Library, file: &Path) -> Result<Self, Error> {
+        let cwd = env::current_dir().unwrap();
+        let full_path;
+
+        // Check if the path is relative or absolute.
+        if file.to_path_buf().is_absolute() == false {
+            full_path = cwd.join(file.to_path_buf());
+        } else {
+            full_path = file.to_path_buf();
+        }
+        // Make sure the photo exists.
+        if std::fs::exists(full_path.clone()).unwrap() != true {
+            return Err(Error::InternalError(InternalError::PathNotExist));
+        }
+
         let photo = Photo {
-            filename: file.as_ref().to_path_buf(),
+            filename: full_path,
         };
 
         library.db.write_photo(&photo).unwrap();
