@@ -1,12 +1,11 @@
 [package]
-name = "libospl"
+name = "lumenza"
 version = "0.2.0"
 edition = "2021"
 
 [lib]
-name = "ospl"
+name = "lumenza"
 doctest = false
-
 
 [dependencies]
 rusqlite = { version = "0.29.0", features = ["bundled", "chrono"] }
