@@ -47,13 +47,35 @@ impl Database {
 
 // Instance Methods
 impl Database {
-    pub fn write_photo(&self, photo: &photo::Photo) -> Result<(), Error> {
+    pub fn write_photo(&self, photo: &photo::Photo) -> Result<bool, Error> {
         self.connection
             .execute(
                 "INSERT INTO photos (filename) VALUES (?1)",
                 (&photo.filename.to_str(),),
             )
             .unwrap();
-        Ok(())
+        Ok(true)
+    }
+    /// Search for a photo in the database
+    pub fn lookup_photo(&self, photo: &photo::Photo) -> Result<bool, Error> {
+        let mut stmt = self
+            .connection
+            .prepare("SELECT filename FROM photos WHERE filename = ?")
+            .unwrap();
+        let mut rows = stmt.query(&[&photo.get_filename().to_str()]).unwrap();
+
+        // TODO: It returns on the first match, but it should check if there are more than one match.
+        while let Some(row) = rows.next().unwrap() {
+            // Get the filename from the database.
+            let res: String = row.get(0).unwrap();
+
+            // Compare it with our filename.
+            if res == photo.get_filename().to_str().unwrap() {
+                return Ok(true);
+            }
+        }
+
+        println!("{} not found in database", photo.get_filename().to_str().unwrap());
+        Ok(false)
     }
 }

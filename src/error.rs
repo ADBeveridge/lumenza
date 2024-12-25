@@ -34,4 +34,6 @@ pub enum InternalError {
     EmptyName,
     /// Path did not exist
     PathNotExist,
+    /// Item already in library
+    AlreadyExisted,
 }
