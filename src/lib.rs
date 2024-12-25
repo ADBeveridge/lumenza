@@ -15,7 +15,17 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+//! Lumenza is a cross-platform photo library manager. 
+//! It handles core tasks, such as storing data in a database,
+//! tagging, and album management.
+
+/// Lumenza specific errors
 pub mod error;
+
+/// Library level functions
 pub mod library;
+
+/// Photo level functions
 pub mod photo;
-pub mod systems;
+
+pub(crate) mod systems;
