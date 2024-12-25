@@ -29,7 +29,7 @@ pub struct Filesystem {
 // Static Methods
 impl Filesystem {
     // Initialize filsystem structure for library.
-    pub fn new(config: &Path, thumbnails: &Path, pictures: &Vec<PathBuf>) -> Result<Self, Error> {
+    pub fn new(config: &PathBuf, thumbnails: &PathBuf, pictures: &Vec<PathBuf>) -> Result<Self, Error> {
         // Create empty stuff for a new library.
         std::fs::create_dir_all(PathBuf::from(thumbnails)).unwrap();
         for path in pictures {
@@ -44,10 +44,10 @@ impl Filesystem {
     }
 
     /// Loads the file paths into the Filesystem object and returns it.
-    pub fn open(config_path: &Path, thumbnails: &Path, pictures: &Vec<PathBuf>) -> Result<Self, Error> {
+    pub fn open(config_path: &PathBuf, thumbnails: &PathBuf, pictures: &Vec<PathBuf>) -> Result<Self, Error> {
         return Ok(Filesystem {
-            config_path: config_path.to_path_buf(),
-            thumbnails_path: thumbnails.to_path_buf(),
+            config_path: config_path.clone(),
+            thumbnails_path: thumbnails.clone(),
             pictures_paths: pictures.clone(),
         });
     }

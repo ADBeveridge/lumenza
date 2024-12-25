@@ -33,10 +33,10 @@ pub struct Library {
 impl Library {
     /// This function will create the files at the given paths.
     pub fn create(
-        config: &Path,
-        thumbnails: &Path,
+        config: &PathBuf,
+        thumbnails: &PathBuf,
         pictures: &Vec<PathBuf>,
-        database: &Path,
+        database: &PathBuf,
     ) -> Result<Self, Error> {
         let fs = filesystem::Filesystem::new(config, thumbnails, pictures).unwrap();
         let db = database::Database::new(database).unwrap();

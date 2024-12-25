@@ -19,7 +19,7 @@
 mod tests {
     use lumenza::library::Library;
     use lumenza::photo::Photo;
-    use std::path;
+    use std::path::{self, Path, PathBuf};
     use tempdir::TempDir;
 
     #[test]
@@ -32,10 +32,10 @@ mod tests {
         let database = dir.path().join("database.sqlite3");
 
         Library::create(
-            config.as_path(),
-            thumbnails.as_path(),
+            &config,
+            &thumbnails,
             &vec![pictures.clone()],
-            database.as_path(),
+            &database
         )
         .unwrap();
 
@@ -55,15 +55,15 @@ mod tests {
         let database = dir.path().join("database.sqlite3");
 
         let library = Library::create(
-            config.as_path(),
-            thumbnails.as_path(),
+            &config,
+            &thumbnails,
             &vec![pictures],
-            database.as_path(),
+            &database
         )
         .unwrap();
 
-        let image_path = path::Path::new("tests/images/lake.jpg");
-        Photo::new(&library, image_path).unwrap();
+        let file = PathBuf::from("tests/images/lake.jpg");
+        Photo::new(&library, &file).unwrap();
     }
     #[test]
     fn scan_folder() {
@@ -75,10 +75,10 @@ mod tests {
         let database = dir.path().join("database.sqlite3");
 
         let library = Library::create(
-            config.as_path(),
-            thumbnails.as_path(),
+            &config,
+            &thumbnails,
             &vec![pictures],
-            database.as_path(),
+            &database
         )
         .unwrap();
 

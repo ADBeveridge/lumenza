@@ -15,7 +15,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use crate::error::Error;
 use crate::error::InternalError;
@@ -27,7 +27,7 @@ pub struct Photo {
 
 impl Photo {
     /// Create a new photo entry in the library
-    pub fn new(library: &library::Library, file: &Path) -> Result<Self, Error> {
+    pub fn new(library: &library::Library, file: &PathBuf) -> Result<Self, Error> {
         let cwd = env::current_dir().unwrap();
         let full_path;
 
