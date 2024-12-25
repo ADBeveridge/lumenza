@@ -14,10 +14,8 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-use mime_guess;
 use std::env;
 use std::path::{Path, PathBuf};
-use walkdir::WalkDir;
 
 use crate::error::Error;
 use crate::error::InternalError;
@@ -64,47 +62,6 @@ impl Photo {
 
         Ok(photo)
     }
-
-    /// Scan a folder for any photos that are not in the library yet
-    pub fn scan_folder(library: &library::Library, folder: &Path) -> Result<(), Error> {
-        let mut image_paths: Vec<PathBuf> = Vec::new();
-
-        let walker = WalkDir::new(folder)
-            .into_iter()
-            .filter_entry(|e| !is_hidden_folder(e));
-
-        // Walk through all the files inside it, taking only files that are images.
-        for entry in walker {
-            let entry = entry.expect("Didn't find this file!");
-            if entry.file_type().is_file() {
-                let path = entry.path().to_path_buf();
-                let mime = mime_guess::from_path(&path).first_raw().unwrap_or_default();
-                if mime.starts_with("image/") {
-                    image_paths.push(path.clone()); // Push the full file path to the images
-                }
-            }
-        }
-
-        // After making sure the photo doesn't exist yet, insert it into the database.
-        for image_path in &image_paths {
-            let photo = Photo::new(library, &image_path);
-
-            match photo {
-                Ok(_photo) => {
-                    continue;
-                }
-                Err(err) => {
-                    if err == Error::InternalError(InternalError::AlreadyExisted) {
-                        println!("Skipping over photo: already in library");
-                        continue;
-                    } else {
-                        return Err(err);
-                    }
-                }
-            }
-        }
-        Ok(())
-    }
 }
 
 // Getters
@@ -112,14 +69,4 @@ impl Photo {
     pub fn get_filename(&self) -> PathBuf {
         self.filename.to_path_buf()
     }
-}
-
-// Make sure that we don't search for pictures in hidden folders.
-// TODO: Add cross-platform agnostic detection.
-fn is_hidden_folder(entry: &walkdir::DirEntry) -> bool {
-    entry
-        .file_name()
-        .to_str()
-        .map(|s| s.starts_with("."))
-        .unwrap_or(false)
 }

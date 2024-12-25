@@ -65,4 +65,26 @@ mod tests {
         let image_path = path::Path::new("tests/images/lake.jpg");
         Photo::new(&library, image_path).unwrap();
     }
+    #[test]
+    fn scan_folder() {
+        let dir = TempDir::new("lumenza").unwrap();
+
+        let config = dir.path().join("default.conf");
+        let thumbnails = dir.path().join("thumbnails/");
+        let pictures = dir.path().join("pictures/");
+        let database = dir.path().join("database.sqlite3");
+
+        let library = Library::create(
+            config.as_path(),
+            thumbnails.as_path(),
+            pictures.as_path(),
+            database.as_path(),
+        )
+        .unwrap();
+
+        let folder_path = path::Path::new("tests/images/");
+
+        let res = library.scan_folder(folder_path).unwrap();
+        assert_eq!(res, ());
+    }
 }
