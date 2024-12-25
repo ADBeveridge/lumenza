@@ -21,9 +21,22 @@
 #[cfg(test)]
 mod tests {
     use lumenza::library;
+    use tempdir::TempDir;
 
     #[test]
     fn create_library() {
-        library::Library::create("./tests/example/default.conf", "./tests/example/thumbnails/", "tests/example/pictures", "./tests/example/database").unwrap();
+        let dir = TempDir::new("lumenza").unwrap();
+
+        let config = dir.path().join("default.conf");
+        let thumbnails = dir.path().join("thumbnails/");
+        let pictures = dir.path().join("pictures/");
+        let database = dir.path().join("database.sqlite3");
+
+        library::Library::create(config.clone(), thumbnails.clone(), pictures.clone(), database.clone()).unwrap();
+
+        assert!(std::fs::exists(config).unwrap());
+        assert!(std::fs::exists(thumbnails).unwrap());
+        assert!(std::fs::exists(pictures).unwrap());
+        assert!(std::fs::exists(database).unwrap());
     }
 }

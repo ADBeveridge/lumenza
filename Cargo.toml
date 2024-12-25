@@ -9,4 +9,4 @@ doctest = false
 
 [dependencies]
 rusqlite = { version = "0.29.0", features = ["bundled", "chrono"] }
-rand = "0.8.5"
+tempdir = "0.3"
