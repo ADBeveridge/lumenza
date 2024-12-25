@@ -1,5 +1,8 @@
 # Lumenza
-Lumenza is an photo management API for managing a database of photos, based off of libospl.
+Lumenza is an photo manager based off of [libospl](https://github.com/libospl/libospl).
 
-## Documentation
-For now, all documentation will be found here.
+This crate is the half of two main parts:
+
+The crate manages all the photos and does all the background things like importing. All the info is stored in the database. This part is cross-platform. The user interface, communicating with this crate, is the other half. This permits photo libraries to be synced independently because the photo management is the same across all possible platforms. 
+
+Additional crates can provide geolocation or providing AI-based tagging.
