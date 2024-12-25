@@ -37,8 +37,8 @@ impl Library {
         pictures: P,
         database: P,
     ) -> Result<Self, Error> {
-        let db = database::Database::new(database.as_ref()).unwrap();
         let fs = filesystem::Filesystem::new(config, thumbnails, pictures).unwrap();
+        let db = database::Database::new(database.as_ref()).unwrap();
         
         // Return it.
         Ok(Library {
