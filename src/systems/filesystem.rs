@@ -20,7 +20,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::error::OsplError;
+use crate::error::Error;
 
 #[derive(Default)]
 pub struct Filesystem {
@@ -36,7 +36,7 @@ impl Filesystem {
         config: P,
         thumbnails: P,
         pictures: P,
-    ) -> Result<Self, OsplError> {
+    ) -> Result<Self, Error> {
         // Create empty stuff for a new library.
         std::fs::create_dir_all(PathBuf::from(thumbnails.as_ref())).unwrap();
         std::fs::create_dir_all(PathBuf::from(pictures.as_ref())).unwrap();
@@ -49,7 +49,7 @@ impl Filesystem {
     }
 
     /// Loads the file paths into the Filesystem object and returns it.
-    pub fn open<P: AsRef<Path>>(config_path: P, thumbnails: P, pictures: P) -> Result<Self, OsplError> {
+    pub fn open<P: AsRef<Path>>(config_path: P, thumbnails: P, pictures: P) -> Result<Self, Error> {
         return Ok(Filesystem {
             config_path: config_path.as_ref().to_path_buf(),
             thumbnails_path: thumbnails.as_ref().to_path_buf(),

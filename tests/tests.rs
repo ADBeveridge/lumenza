@@ -20,7 +20,7 @@
 
 #[cfg(test)]
 mod tests {
-    use lumenza::api::library;
+    use lumenza::library;
 
     #[test]
     fn create_library() {

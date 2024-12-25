@@ -18,8 +18,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use crate::api::photo;
-use crate::error::OsplError;
+use crate::photo;
+use crate::error::Error;
 
 use rusqlite::Connection;
 use std::path::Path;
@@ -35,7 +35,7 @@ pub struct Database {
 // Static Methods
 impl Database {
     /// Create the database object and file, and inserts the main structure
-    pub fn new<P: AsRef<Path>>(path: P) -> Result<Self, OsplError> {
+    pub fn new<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
         let db = Database {
             connection: Connection::open(path.as_ref()).unwrap(),
         };
@@ -50,7 +50,7 @@ impl Database {
 
 // Instance Methods
 impl Database {
-    pub fn write_photo(&self, photo: &photo::Photo) -> Result<(), OsplError> {
+    pub fn write_photo(&self, photo: &photo::Photo) -> Result<(), Error> {
         self.connection.execute(
             "INSERT INTO photos (filename) VALUES (?1)",
             (

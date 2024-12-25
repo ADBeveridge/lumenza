@@ -19,16 +19,15 @@
 */
 use std::path::{Path, PathBuf};
 
-use crate::api::library;
-
-use crate::error::OsplError;
+use crate::library;
+use crate::error::Error;
 
 pub struct Photo {
     pub filename: PathBuf,
 }
 
 impl Photo {
-    pub fn new<P: AsRef<Path>>(library: &library::Library, file: P) -> Result<Self, OsplError> {
+    pub fn new<P: AsRef<Path>>(library: &library::Library, file: P) -> Result<Self, Error> {
         let photo = Photo {
             filename: file.as_ref().to_path_buf(),
         };

@@ -22,7 +22,7 @@ use std::path::Path;
 
 use crate::systems::filesystem;
 use crate::systems::database;
-use crate::error::OsplError;
+use crate::error::Error;
 
 pub struct Library {
     pub fs: filesystem::Filesystem, 
@@ -36,7 +36,7 @@ impl Library {
         thumbnails: P,
         pictures: P,
         database: P,
-    ) -> Result<Self, OsplError> {
+    ) -> Result<Self, Error> {
         let db = database::Database::new(database.as_ref()).unwrap();
         let fs = filesystem::Filesystem::new(config, thumbnails, pictures).unwrap();
         
@@ -48,12 +48,12 @@ impl Library {
     }
 
     /// Loads an existing ospl Library from a config file.
-    pub fn load<P: AsRef<Path>>(_config: P) -> Result<Self, OsplError> {
+    pub fn load<P: AsRef<Path>>(_config: P) -> Result<Self, Error> {
         unimplemented!()
     }
 
     /// Deletes the library files
-    pub fn delete<P: AsRef<Path>>(_config: P) -> Result<Self, OsplError> {
+    pub fn delete<P: AsRef<Path>>(_config: P) -> Result<Self, Error> {
         unimplemented!()
     }
 }

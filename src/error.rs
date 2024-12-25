@@ -1,12 +1,12 @@
 #[derive(Debug, PartialEq)]
-pub enum OsplError {
+pub enum Error {
     DatabaseError(rusqlite::Error),
     IoError(std::io::ErrorKind),
-    InternalError(Error),
+    InternalError(InternalError),
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum Error {
+pub enum InternalError {
     /// other error
     Other = -1000,
     /// The file is not supported by the library
