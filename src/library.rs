@@ -15,15 +15,16 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+use mime_guess;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
-use mime_guess;
 
 use crate::error::Error;
 use crate::error::InternalError;
+use crate::photo;
+use crate::systems::config;
 use crate::systems::database;
 use crate::systems::filesystem;
-use crate::photo;
 
 pub struct Library {
     pub fs: filesystem::Filesystem,
@@ -33,15 +34,41 @@ pub struct Library {
 impl Library {
     /// This function will create the files at the given paths.
     pub fn create(
-        config: &PathBuf,
-        thumbnails: &PathBuf,
-        pictures: &Vec<PathBuf>,
-        database: &PathBuf,
+        config_path: &PathBuf,
+        thumbnails_path: &PathBuf,
+        pictures_paths: &Vec<PathBuf>,
+        database_path: &PathBuf,
     ) -> Result<Self, Error> {
-        let fs = filesystem::Filesystem::new(config, thumbnails, pictures).unwrap();
-        let db = database::Database::new(database).unwrap();
+        // Initialize config, database, and file systems.
+        let fs = filesystem::Filesystem::new(config_path, thumbnails_path, pictures_paths).unwrap();
+        let db = database::Database::new(database_path).unwrap();
 
-        // Return it.
+        let mut pictures_strs = Vec::new();
+        for path in pictures_paths {
+            pictures_strs.push(path.as_path().to_str().unwrap().to_string());
+        }
+        config::Config::write_config(
+            &config_path.as_path().to_str().unwrap().to_string(),
+            &pictures_strs,
+            &thumbnails_path.as_path().to_str().unwrap().to_string(),
+            &database_path.as_path().to_str().unwrap().to_string(),
+        )
+        .unwrap();
+
+        Ok(Library { fs: fs, db: db })
+    }
+
+    pub fn open(config_path: &PathBuf) -> Result<Self, Error> {
+        let config = config::Config::read_config(config_path).unwrap();
+
+        let thumbnails_path = config.get_thumbnails_path();
+        let pictures_paths = config.get_pictures_path();
+        let database_path = config.get_database_path();
+
+        let fs =
+            filesystem::Filesystem::open(config_path, &thumbnails_path, &pictures_paths).unwrap();
+        let db = database::Database::new(database_path).unwrap();
+
         Ok(Library { fs: fs, db: db })
     }
 

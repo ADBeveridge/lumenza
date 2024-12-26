@@ -19,7 +19,7 @@
 mod tests {
     use lumenza::library::Library;
     use lumenza::photo::Photo;
-    use std::path::{self, Path, PathBuf};
+    use std::path::{self, PathBuf};
     use tempdir::TempDir;
 
     #[test]
@@ -69,7 +69,7 @@ mod tests {
     fn scan_folder() {
         let dir = TempDir::new("lumenza").unwrap();
 
-        let config = dir.path().join("default.conf");
+        let config = PathBuf::from("/home/ab/default.conf");
         let thumbnails = dir.path().join("thumbnails/");
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
@@ -85,6 +85,31 @@ mod tests {
         let folder_path = path::Path::new("tests/images/");
 
         let res = library.scan_folder(folder_path).unwrap();
+
+        /* 
+        use std::{thread, time};
+        let ten_millis = time::Duration::from_millis(90000);
+        thread::sleep(ten_millis);
+        */
+
         assert_eq!(res, ());
+    }
+
+    #[test]
+    fn open_library() {
+        let dir = TempDir::new("lumenza").unwrap();
+
+        let config = dir.path().join("default.conf");
+        let thumbnails = dir.path().join("thumbnails/");
+        let pictures = dir.path().join("pictures/");
+        let database = dir.path().join("database.sqlite3");
+
+        Library::create(
+            &config,
+            &thumbnails,
+            &vec![pictures],
+            &database
+        )
+        .unwrap();
     }
 }
