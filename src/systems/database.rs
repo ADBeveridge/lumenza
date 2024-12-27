@@ -19,7 +19,7 @@ use crate::error::Error;
 use crate::photo;
 
 use rusqlite::Connection;
-use std::path::Path;
+use std::path::PathBuf;
 
 #[path = "sql.rs"]
 mod sql_schema;
@@ -32,15 +32,21 @@ pub struct Database {
 // Static Methods
 impl Database {
     /// Create the database object and file, and inserts the main structure
-    pub fn new<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
+    pub fn new(path: &PathBuf) -> Result<Self, Error> {
         let db = Database {
-            connection: Connection::open(path.as_ref()).unwrap(),
+            connection: Connection::open(path).unwrap(),
         };
 
         let sql = sql_schema::sql_schema();
         let sql = sql.as_str();
 
         db.connection.execute_batch(sql).unwrap();
+        Ok(db)
+    }
+    pub fn open(path: &PathBuf) -> Result<Self, Error> {
+        let db = Database {
+            connection: Connection::open(path).unwrap(),
+        };
         Ok(db)
     }
 }
@@ -74,8 +80,6 @@ impl Database {
                 return Ok(true);
             }
         }
-
-        println!("{} not found in database", photo.get_filename().to_str().unwrap());
         Ok(false)
     }
 }

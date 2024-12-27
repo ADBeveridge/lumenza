@@ -16,7 +16,7 @@
 */
 
 use mime_guess;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use walkdir::WalkDir;
 
 use crate::error::Error;
@@ -67,13 +67,13 @@ impl Library {
 
         let fs =
             filesystem::Filesystem::open(config_path, &thumbnails_path, &pictures_paths).unwrap();
-        let db = database::Database::new(database_path).unwrap();
+        let db = database::Database::open(&database_path).unwrap();
 
         Ok(Library { fs: fs, db: db })
     }
 
     /// If folder is not in library already, add folder and photos to library
-    pub fn scan_folder(&self, folder: &Path) -> Result<(), Error> {
+    pub fn scan_folder(&self, folder: &PathBuf) -> Result<(), Error> {
         let mut image_paths: Vec<PathBuf> = Vec::new();
 
         let walker = WalkDir::new(folder)

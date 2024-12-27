@@ -69,28 +69,20 @@ mod tests {
     fn scan_folder() {
         let dir = TempDir::new("lumenza").unwrap();
 
-        let config = PathBuf::from("/home/ab/default.conf");
+        let config = dir.path().join("default.conf");
         let thumbnails = dir.path().join("thumbnails/");
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library = Library::create(
+        let library_new = Library::create(
             &config,
             &thumbnails,
             &vec![pictures],
             &database
         )
         .unwrap();
-
-        let folder_path = path::Path::new("tests/images/");
-
-        let res = library.scan_folder(folder_path).unwrap();
-
-        /* 
-        use std::{thread, time};
-        let ten_millis = time::Duration::from_millis(90000);
-        thread::sleep(ten_millis);
-        */
+        let folder_path = path::Path::new("tests/images/").to_path_buf();
+        let res = library_new.scan_folder(&folder_path).unwrap();
 
         assert_eq!(res, ());
     }
@@ -104,12 +96,17 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        Library::create(
+        let library_new = Library::create(
             &config,
             &thumbnails,
             &vec![pictures],
             &database
         )
         .unwrap();
+        let folder_path = path::Path::new("tests/images/").to_path_buf();
+        library_new.scan_folder(&folder_path).unwrap();
+
+
+        Library::open(&config).unwrap();
     }
 }

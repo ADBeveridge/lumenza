@@ -30,7 +30,6 @@ impl Config {
             thumbnails_path: thumbnails_path.clone(),
             database_path: database_path.clone(),
         };
-        println!("{:?}", config);
         let text = toml::to_string(&config).unwrap();
         std::fs::write(config_path, text).unwrap();
         Ok(())

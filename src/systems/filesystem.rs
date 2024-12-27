@@ -33,7 +33,7 @@ impl Filesystem {
         thumbnails: &PathBuf,
         pictures: &Vec<PathBuf>,
     ) -> Result<Self, Error> {
-        // Create empty stuff for a new library. Config file will be created by config system, as with database.
+        // Create empty folders for a new library. Config file will be created by config system, same with database.
         std::fs::create_dir_all(PathBuf::from(thumbnails)).unwrap();
         for path in pictures {
             std::fs::create_dir_all(path).unwrap();
