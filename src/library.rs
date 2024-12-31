@@ -21,7 +21,7 @@ use walkdir::WalkDir;
 
 use crate::error::Error;
 use crate::error::InternalError;
-use crate::photo;
+use crate::picture;
 use crate::systems::config;
 use crate::systems::database;
 use crate::systems::filesystem;
@@ -31,6 +31,7 @@ pub struct Library {
     pub db: database::Database,
 }
 
+// Static methods.
 impl Library {
     /// This function will create the files at the given paths.
     pub fn create(
@@ -71,8 +72,11 @@ impl Library {
 
         Ok(Library { fs: fs, db: db })
     }
+}
 
-    /// If folder is not in library already, add folder and photos to library
+// Instance methods. 
+impl  Library {
+    /// If folder is not in library already, add folder and pictures to library
     pub fn scan_folder(&self, folder: &PathBuf) -> Result<(), Error> {
         let mut image_paths: Vec<PathBuf> = Vec::new();
 
@@ -92,17 +96,17 @@ impl Library {
             }
         }
 
-        // After making sure the photo doesn't exist yet, insert it into the database.
+        // After making sure the picture doesn't exist yet, insert it into the database.
         for image_path in &image_paths {
-            let photo = photo::Photo::new(&self, &image_path);
+            let picture = picture::Picture::new(&self, &image_path);
 
-            match photo {
-                Ok(_photo) => {
+            match picture {
+                Ok(_picture) => {
                     continue;
                 }
                 Err(err) => {
                     if err == Error::InternalError(InternalError::AlreadyExisted) {
-                        println!("Skipping over photo: already in library");
+                        println!("Skipping over picture: already in library");
                         continue;
                     } else {
                         return Err(err);
@@ -110,6 +114,17 @@ impl Library {
                 }
             }
         }
+        Ok(())
+    }
+
+    /// List all pictures in the library
+    pub fn list_all_pictures(&self) -> Result<Vec<picture::Picture>, Error> {
+        // For now, only the database is used as a source, as it should be the most up to date. 
+        self.db.list_all_pictures()
+    }
+
+    /// Manually add a picture to a library from a filename.
+    pub fn add_picture(&self, _filename: &PathBuf) -> Result<(), Error> {
         Ok(())
     }
 }

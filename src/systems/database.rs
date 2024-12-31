@@ -16,7 +16,7 @@
 */
 
 use crate::error::Error;
-use crate::photo;
+use crate::picture;
 
 use rusqlite::Connection;
 use std::path::PathBuf;
@@ -53,22 +53,22 @@ impl Database {
 
 // Instance Methods
 impl Database {
-    pub fn write_photo(&self, photo: &photo::Photo) -> Result<bool, Error> {
+    pub fn write_picture(&self, picture: &picture::Picture) -> Result<bool, Error> {
         self.connection
             .execute(
-                "INSERT INTO photos (filename) VALUES (?1)",
-                (&photo.filename.to_str(),),
+                "INSERT INTO pictures (filename) VALUES (?1)",
+                (&picture.filename.to_str(),),
             )
             .unwrap();
         Ok(true)
     }
-    /// Search for a photo in the database
-    pub fn lookup_photo(&self, photo: &photo::Photo) -> Result<bool, Error> {
+    /// Search for a picture in the database
+    pub fn lookup_picture(&self, picture: &picture::Picture) -> Result<bool, Error> {
         let mut stmt = self
             .connection
-            .prepare("SELECT filename FROM photos WHERE filename = ?")
+            .prepare("SELECT filename FROM pictures WHERE filename = ?")
             .unwrap();
-        let mut rows = stmt.query(&[&photo.get_filename().to_str()]).unwrap();
+        let mut rows = stmt.query(&[&picture.get_filename().to_str()]).unwrap();
 
         // TODO: It returns on the first match, but it should check if there are more than one match.
         while let Some(row) = rows.next().unwrap() {
@@ -76,24 +76,24 @@ impl Database {
             let res: String = row.get(0).unwrap();
 
             // Compare it with our filename.
-            if res == photo.get_filename().to_str().unwrap() {
+            if res == picture.get_filename().to_str().unwrap() {
                 return Ok(true);
             }
         }
         Ok(false)
     }
-    pub fn list_all_photos(&self) -> Result<Vec<photo::Photo>, Error> {
-        let mut photos: Vec<photo::Photo> = Vec::new();
-        let mut stmt = self.connection.prepare("SELECT * FROM photos").unwrap();
+    pub fn list_all_pictures(&self) -> Result<Vec<picture::Picture>, Error> {
+        let mut pictures: Vec<picture::Picture> = Vec::new();
+        let mut stmt = self.connection.prepare("SELECT * FROM pictures").unwrap();
         let mut rows = stmt.query(()).unwrap();
         while let Some(row) = rows.next().unwrap() {
             let filename: String = row.get(1).unwrap();
-            let photo = photo::Photo {
+            let picture = picture::Picture {
                 id: row.get(0).unwrap(),
                 filename: PathBuf::from(filename),
             };
-            photos.push(photo);
+            pictures.push(picture);
         }
-        Ok(photos)
+        Ok(pictures)
     }
 }

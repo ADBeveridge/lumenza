@@ -21,13 +21,13 @@ use crate::error::Error;
 use crate::error::InternalError;
 use crate::library;
 
-pub struct Photo {
+pub struct Picture {
     pub id: u32,
     pub filename: PathBuf,
 }
 
-impl Photo {
-    /// Create a new photo entry in the library
+impl Picture {
+    /// Create a new picture entry in the library
     pub fn new(library: &library::Library, file: &PathBuf) -> Result<Self, Error> {
         let cwd = env::current_dir().unwrap();
         let full_path;
@@ -38,41 +38,36 @@ impl Photo {
         } else {
             full_path = file.to_path_buf();
         }
-        // Make sure the photo exists.
+        // Make sure the picture exists.
         if std::fs::exists(full_path.clone()).unwrap() != true {
             return Err(Error::InternalError(InternalError::PathNotExist));
         }
 
-        let photo = Photo {
+        let picture = Picture {
             id: 0,
             filename: full_path,
         };
 
-        // If photo was already in the database, skip insertion.
-        let res = library.db.lookup_photo(&photo).unwrap();
+        // If picture was already in the database, skip insertion.
+        let res = library.db.lookup_picture(&picture).unwrap();
         if res == true {
             return Err(Error::InternalError(InternalError::AlreadyExisted));
         }
 
-        library.db.write_photo(&photo).unwrap();
+        library.db.write_picture(&picture).unwrap();
 
         // Check if the insert was successful.
-        let res = library.db.lookup_photo(&photo).unwrap();
+        let res = library.db.lookup_picture(&picture).unwrap();
         if res == false {
             return Err(Error::DatabaseError(rusqlite::Error::InvalidQuery));
         }
 
-        Ok(photo)
-    }
-    /// List all photos in the library
-    pub fn list_all_photos(library: &library::Library) -> Result<Vec<Self>, Error> {
-        // For now, only the database is used as a source, as it should be the most up to date. 
-        library.db.list_all_photos()
+        Ok(picture)
     }
 }
 
 // Getters
-impl Photo {
+impl Picture {
     pub fn get_filename(&self) -> PathBuf {
         self.filename.to_path_buf()
     }

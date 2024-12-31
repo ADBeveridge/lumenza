@@ -18,7 +18,7 @@
 #[cfg(test)]
 mod tests {
     use lumenza::library::Library;
-    use lumenza::photo::Photo;
+    use lumenza::picture::Picture;
     use std::path::{self, PathBuf};
     use tempdir::TempDir;
 
@@ -46,7 +46,7 @@ mod tests {
     }
 
     #[test]
-    fn insert_photo() {
+    fn insert_picture() {
         let dir = TempDir::new("lumenza").unwrap();
 
         let config = dir.path().join("default.conf");
@@ -63,7 +63,7 @@ mod tests {
         .unwrap();
 
         let file = PathBuf::from("tests/images/lake.jpg");
-        Photo::new(&library, &file).unwrap();
+        Picture::new(&library, &file).unwrap();
     }
     #[test]
     fn scan_folder() {
@@ -103,7 +103,7 @@ mod tests {
             &database
         )
         .unwrap();
-        let folder_path = path::Path::new("tests/images/").to_path_buf();
+        let folder_path = PathBuf::from("tests/images/");
         library_new.scan_folder(&folder_path).unwrap();
 
         let library = Library::open(&config).unwrap();
@@ -111,5 +111,31 @@ mod tests {
         assert_eq!(library.fs.get_config_path(), config);
         assert_eq!(library.fs.get_pictures_path(), vec![pictures]);
         assert_eq!(library.fs.get_thumbnails_path(), thumbnails);
+    }
+
+    #[test]
+    fn list_all_pictures() {
+        let dir = TempDir::new("lumenza").unwrap();
+
+        let config = dir.path().join("default.conf");
+        let thumbnails = dir.path().join("thumbnails/");
+        let pictures = dir.path().join("pictures/");
+        let database = dir.path().join("database.sqlite3");
+
+        let library = Library::create(
+            &config,
+            &thumbnails,
+            &vec![pictures.clone()],
+            &database
+        )
+        .unwrap();
+        
+        let folder_path = PathBuf::from("tests/images/");
+        library.scan_folder(&folder_path).unwrap();
+
+        let pictures = library.list_all_pictures().unwrap();
+
+        // There are two pictures bundled in the tests folder, hence the 2.
+        assert_eq!(2, pictures.len());
     }
 }
