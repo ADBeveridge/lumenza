@@ -99,14 +99,17 @@ mod tests {
         let library_new = Library::create(
             &config,
             &thumbnails,
-            &vec![pictures],
+            &vec![pictures.clone()],
             &database
         )
         .unwrap();
         let folder_path = path::Path::new("tests/images/").to_path_buf();
         library_new.scan_folder(&folder_path).unwrap();
 
-
-        Library::open(&config).unwrap();
+        let library = Library::open(&config).unwrap();
+        
+        assert_eq!(library.fs.get_config_path(), config);
+        assert_eq!(library.fs.get_pictures_path(), vec![pictures]);
+        assert_eq!(library.fs.get_thumbnails_path(), thumbnails);
     }
 }

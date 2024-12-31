@@ -82,4 +82,18 @@ impl Database {
         }
         Ok(false)
     }
+    pub fn list_all_photos(&self) -> Result<Vec<photo::Photo>, Error> {
+        let mut photos: Vec<photo::Photo> = Vec::new();
+        let mut stmt = self.connection.prepare("SELECT * FROM photos").unwrap();
+        let mut rows = stmt.query(()).unwrap();
+        while let Some(row) = rows.next().unwrap() {
+            let filename: String = row.get(1).unwrap();
+            let photo = photo::Photo {
+                id: row.get(0).unwrap(),
+                filename: PathBuf::from(filename),
+            };
+            photos.push(photo);
+        }
+        Ok(photos)
+    }
 }

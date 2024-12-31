@@ -22,6 +22,7 @@ use crate::error::InternalError;
 use crate::library;
 
 pub struct Photo {
+    pub id: u32,
     pub filename: PathBuf,
 }
 
@@ -43,6 +44,7 @@ impl Photo {
         }
 
         let photo = Photo {
+            id: 0,
             filename: full_path,
         };
 
@@ -61,6 +63,11 @@ impl Photo {
         }
 
         Ok(photo)
+    }
+    /// List all photos in the library
+    pub fn list_all_photos(library: &library::Library) -> Result<Vec<Self>, Error> {
+        // For now, only the database is used as a source, as it should be the most up to date. 
+        library.db.list_all_photos()
     }
 }
 
