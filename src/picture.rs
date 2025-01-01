@@ -28,7 +28,7 @@ pub struct Picture {
 
 impl Picture {
     /// Create a new picture entry in the library
-    pub fn new(library: &library::Library, file: &PathBuf) -> Result<Self, Error> {
+    pub(crate) fn new(library: &library::Library, file: &PathBuf) -> Result<Self, Error> {
         let cwd = env::current_dir().unwrap();
         let full_path;
 

@@ -15,6 +15,6 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-pub mod database;
-pub mod filesystem;
-pub mod config;
+pub(crate) mod database;
+pub(crate) mod filesystem;
+pub(crate) mod config;

@@ -27,8 +27,8 @@ use crate::systems::database;
 use crate::systems::filesystem;
 
 pub struct Library {
-    pub fs: filesystem::Filesystem,
-    pub db: database::Database,
+    pub(crate) _fs: filesystem::Filesystem,
+    pub(crate) db: database::Database,
 }
 
 // Static methods.
@@ -56,7 +56,7 @@ impl Library {
         )
         .unwrap();
 
-        Ok(Library { fs: fs, db: db })
+        Ok(Library { _fs: fs, db: db })
     }
 
     pub fn open(config_path: &PathBuf) -> Result<Self, Error> {
@@ -70,7 +70,7 @@ impl Library {
             filesystem::Filesystem::open(config_path, &thumbnails_path, &pictures_paths).unwrap();
         let db = database::Database::open(&database_path).unwrap();
 
-        Ok(Library { fs: fs, db: db })
+        Ok(Library { _fs: fs, db: db })
     }
 }
 
@@ -124,7 +124,8 @@ impl  Library {
     }
 
     /// Manually add a picture to a library from a filename.
-    pub fn add_picture(&self, _filename: &PathBuf) -> Result<(), Error> {
+    pub fn add_picture(&self, filename: &PathBuf) -> Result<(), Error> {
+        picture::Picture::new(self, &filename).unwrap();
         Ok(())
     }
 }

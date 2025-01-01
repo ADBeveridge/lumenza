@@ -20,15 +20,15 @@ use std::path::PathBuf;
 use crate::error::Error;
 
 pub struct Filesystem {
-    config_path: PathBuf,
-    pictures_paths: Vec<PathBuf>,
-    thumbnails_path: PathBuf,
+    _config_path: PathBuf,
+    _pictures_paths: Vec<PathBuf>,
+    _thumbnails_path: PathBuf,
 }
 
 // Static Methods
 impl Filesystem {
     // Initialize filsystem structure for library.
-    pub fn new(
+    pub(crate) fn new(
         config: &PathBuf,
         thumbnails: &PathBuf,
         pictures: &Vec<PathBuf>,
@@ -46,33 +46,16 @@ impl Filesystem {
     }
 
     /// Loads the file paths into the Filesystem object and returns it.
-    pub fn open(
+    pub(crate) fn open(
         config_path: &PathBuf,
         thumbnails_path: &PathBuf,
         pictures_paths: &Vec<PathBuf>,
     ) -> Result<Self, Error> {
         return Ok(Filesystem {
-            config_path: config_path.clone(),
-            thumbnails_path: thumbnails_path.clone(),
-            pictures_paths: pictures_paths.clone(),
+            _config_path: config_path.clone(),
+            _thumbnails_path: thumbnails_path.clone(),
+            _pictures_paths: pictures_paths.clone(),
         });
     }
 }
 
-// Instance Methods
-impl Filesystem {
-    /// Returns the path on filesystem to the pictures path in the library
-    pub fn get_config_path(&self) -> PathBuf {
-        self.config_path.to_path_buf()
-    }
-
-    /// Returns the path on filesystem to the pictures path in the library
-    pub fn get_pictures_path(&self) -> Vec<PathBuf> {
-        self.pictures_paths.clone()
-    }
-
-    /// Returns the path on filesystem to the thumbnails path in the library
-    pub fn get_thumbnails_path(&self) -> PathBuf {
-        self.thumbnails_path.to_path_buf()
-    }
-}
