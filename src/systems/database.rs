@@ -87,10 +87,16 @@ impl Database {
         let mut stmt = self.connection.prepare("SELECT * FROM pictures").unwrap();
         let mut rows = stmt.query(()).unwrap();
         while let Some(row) = rows.next().unwrap() {
+
+            let id = row.get(0).unwrap();
             let filename: String = row.get(1).unwrap();
+            let thumbnail: Option<String> = row.get(2).ok();
+
+        
             let picture = picture::Picture {
-                id: row.get(0).unwrap(),
+                id: id,
                 filename: PathBuf::from(filename),
+                thumbnail: thumbnail.map(PathBuf::from).unwrap_or_default(),
             };
             pictures.push(picture);
         }

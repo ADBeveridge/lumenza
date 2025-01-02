@@ -24,6 +24,7 @@ use crate::library;
 pub struct Picture {
     pub id: u32,
     pub filename: PathBuf,
+    pub thumbnail: PathBuf,
 }
 
 impl Picture {
@@ -46,6 +47,7 @@ impl Picture {
         let picture = Picture {
             id: 0,
             filename: full_path,
+            thumbnail: PathBuf::new(),
         };
 
         // If picture was already in the database, skip insertion.

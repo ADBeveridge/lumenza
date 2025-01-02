@@ -41,8 +41,8 @@ impl Library {
         database_path: &PathBuf,
     ) -> Result<Self, Error> {
         // Initialize config, database, and file systems.
-        let fs = filesystem::Filesystem::new(config_path, thumbnails_path, pictures_paths).unwrap();
-        let db = database::Database::new(database_path).unwrap();
+        let fs = filesystem::Filesystem::new(config_path, thumbnails_path, pictures_paths)?;
+        let db = database::Database::new(database_path)?;
 
         let mut pictures_strs = Vec::new();
         for path in pictures_paths {
@@ -53,30 +53,29 @@ impl Library {
             &pictures_strs,
             &thumbnails_path.as_path().to_str().unwrap().to_string(),
             &database_path.as_path().to_str().unwrap().to_string(),
-        )
-        .unwrap();
+        )?;
 
         Ok(Library { _fs: fs, db: db })
     }
 
     pub fn open(config_path: &PathBuf) -> Result<Self, Error> {
-        let config = config::Config::read_config(config_path).unwrap();
+        let config = config::Config::read_config(config_path)?;
 
         let thumbnails_path = config.get_thumbnails_path();
         let pictures_paths = config.get_pictures_path();
         let database_path = config.get_database_path();
 
-        let fs =
-            filesystem::Filesystem::open(config_path, &thumbnails_path, &pictures_paths).unwrap();
-        let db = database::Database::open(&database_path).unwrap();
+        let fs = filesystem::Filesystem::open(config_path, &thumbnails_path, &pictures_paths)?;
+        let db = database::Database::open(&database_path)?;
 
         Ok(Library { _fs: fs, db: db })
     }
 }
 
-// Instance methods. 
-impl  Library {
-    /// If folder is not in library already, add folder and pictures to library
+// Instance methods.
+impl Library {
+    /// Scan a folder for any images that are not in the library yet. If the
+    /// folder is not in the library, it will be added.
     pub fn scan_folder(&self, folder: &PathBuf) -> Result<(), Error> {
         let mut image_paths: Vec<PathBuf> = Vec::new();
 
@@ -119,13 +118,14 @@ impl  Library {
 
     /// List all pictures in the library
     pub fn list_all_pictures(&self) -> Result<Vec<picture::Picture>, Error> {
-        // For now, only the database is used as a source, as it should be the most up to date. 
+        // Only the database is used as a source, as it should be the most up to date.
         self.db.list_all_pictures()
     }
 
-    /// Manually add a picture to a library from a filename.
+    /// This function is a bit of a one-off, as it will not add the folder
+    /// the picture is in. It will only add the picture itself.
     pub fn add_picture(&self, filename: &PathBuf) -> Result<(), Error> {
-        picture::Picture::new(self, &filename).unwrap();
+        picture::Picture::new(self, &filename)?;
         Ok(())
     }
 }
