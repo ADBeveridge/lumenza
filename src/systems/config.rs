@@ -78,7 +78,7 @@ impl Config {
         }
         vec
     }
-    pub fn _get_thumbnails_path(&self) -> PathBuf {
+    pub fn get_thumbnails_path(&self) -> PathBuf {
         PathBuf::from(&self.thumbnails_path)
     }
     pub fn get_database_path(&self) -> PathBuf {

@@ -15,7 +15,10 @@ pub struct Library {
 
 // Static methods.
 impl Library {
-    /// This function will create the files at the given paths.
+    /// Create a new library with the given paths. Files and folderes will be 
+    /// created if they do not exist. The thumbnail and picture paths are just
+    /// a suggestion, as the library allows adding photos/thumbnails that are
+    /// outside of the given paths.
     pub fn create(
         config_path: &PathBuf,
         thumbnails_path: &PathBuf,
@@ -102,6 +105,20 @@ impl Library {
                     }
                 }
             }
+        }
+        Ok(())
+    }
+
+    /// Generate thumbnails for all pictures in the library. As of right now,
+    /// this function is very inefficient. 
+    pub fn generate_all_thumbnails(&self) -> Result<(), LumenzaError> {
+        let pictures = self.list_all_pictures()?;
+        for picture in pictures {
+            // Generate thumbnail filename.
+            let tfolder = self.config.get_thumbnails_path();
+            let tpic = PathBuf::from(picture.filename.file_name().unwrap());
+            let tfile = tfolder.join(tpic);
+            picture.generate_thumbnail(&tfile)?;
         }
         Ok(())
     }

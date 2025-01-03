@@ -87,4 +87,24 @@ mod tests {
         // There are two pictures bundled in the tests folder, hence the 2.
         assert_eq!(2, pictures.len());
     }
+    #[test]
+    fn thumbnail_all_pictures() {
+        let dir = TempDir::new("lumenza").unwrap();
+
+        let config = dir.path().join("default.conf");
+        let thumbnails = dir.path().join("thumbnails/");
+        let pictures = dir.path().join("pictures/");
+        let database = dir.path().join("database.sqlite3");
+
+        let mut library =
+            Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
+
+        let folder_path = PathBuf::from("tests/images/");
+        library.process_folder(&folder_path).unwrap();
+
+        library.generate_all_thumbnails().unwrap();
+
+        let thumbnail = thumbnails.join("lake.jpg");
+        std::fs::metadata(thumbnail).unwrap();
+    }
 }
