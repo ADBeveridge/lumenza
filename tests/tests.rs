@@ -44,7 +44,7 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library_new =
+        let mut library_new =
             Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
         let folder_path = path::Path::new("tests/images/").to_path_buf();
         let res = library_new.process_folder(&folder_path).unwrap();
@@ -76,7 +76,7 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library =
+        let mut library =
             Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
 
         let folder_path = PathBuf::from("tests/images/");

@@ -57,13 +57,13 @@ impl Library {
     /// folder is not in the library, it will be added. Pictures that are marked
     /// as independent but are in the given folder will be marked as children
     /// of that folder.
-    pub fn process_folder(&self, folder: &PathBuf) -> Result<(), LumenzaError> {
+    pub fn process_folder(&mut self, folder: &PathBuf) -> Result<(), LumenzaError> {
         let mut image_paths: Vec<PathBuf> = Vec::new();
         let full_path = folder.absolutize().unwrap_or_default().into_owned();
 
         let folders = self.config.get_pictures_path();
         if !folders.iter().any(|x| x == &full_path) {
-            //panic!("Folder not in library");
+            self.config.add_folder(&full_path)?;
         }
 
         let walker = WalkDir::new(full_path)

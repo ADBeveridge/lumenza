@@ -49,7 +49,7 @@ impl Config {
 
 // Instance methods
 impl Config {
-    pub fn _read_config(&mut self) -> Result<(), LumenzaError> {
+    fn _read_config(&mut self) -> Result<(), LumenzaError> {
         let data = fs::read(&self.config_path).map_err(|_|LumenzaError::IoError())?;
         let text = String::from_utf8(data)?;
         let config: Config = toml::from_str(&text)?;
@@ -57,9 +57,16 @@ impl Config {
         Ok(())
     }
 
-    pub fn write_config(&self) -> Result<(), LumenzaError> {
+    fn write_config(&self) -> Result<(), LumenzaError> {
         let text = toml::to_string(&self)?;
         std::fs::write(&self.config_path, text).map_err(|_| LumenzaError::IoError())?;
+        Ok(())
+    }
+
+    pub fn add_folder(&mut self, folder: &PathBuf) -> Result<(), LumenzaError> {
+        let folder_string = folder.as_path().to_str().unwrap().to_string();
+        self.pictures_paths.push(folder_string);
+        self.write_config()?;
         Ok(())
     }
 
