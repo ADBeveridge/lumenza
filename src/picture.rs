@@ -1,5 +1,5 @@
-use std::env;
 use std::path::PathBuf;
+use path_absolutize::Absolutize;
 
 use crate::error::LumenzaError;
 use crate::library;
@@ -13,16 +13,9 @@ pub struct Picture {
 impl Picture {
     /// Create a new picture entry in the library
     pub(crate) fn new(library: &library::Library, file: &PathBuf) -> Result<Self, LumenzaError> {
-        let cwd = env::current_dir().unwrap();
-        let full_path;
+        let full_path = file.absolutize().unwrap_or_default().into_owned();
 
-        // Check if the path is relative or absolute.
-        if file.to_path_buf().is_absolute() == false {
-            full_path = cwd.join(file.to_path_buf());
-        } else {
-            full_path = file.to_path_buf();
-        }
-
+        // Can't use default error because std::io::error is not implemented in LumenzaError.
         if !std::fs::metadata(full_path.clone()).is_ok() {
             return Err(LumenzaError::FileNotFound());
         }

@@ -46,7 +46,7 @@ mod tests {
 
         let library_new = Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
         let folder_path = path::Path::new("tests/images/").to_path_buf();
-        let res = library_new.scan_folder(&folder_path).unwrap();
+        let res = library_new.process_folder(&folder_path).unwrap();
 
         assert_eq!(res, ());
     }
@@ -63,7 +63,7 @@ mod tests {
         let library_new =
             Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
         let folder_path = PathBuf::from("tests/images/");
-        library_new.scan_folder(&folder_path).unwrap();
+        library_new.process_folder(&folder_path).unwrap();
 
         // The test here is making sure we can open the library at all.
         Library::open(&config).unwrap();
@@ -81,7 +81,7 @@ mod tests {
         let library = Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
 
         let folder_path = PathBuf::from("tests/images/");
-        library.scan_folder(&folder_path).unwrap();
+        library.process_folder(&folder_path).unwrap();
 
         let pictures = library.list_all_pictures().unwrap();
 
