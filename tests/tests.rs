@@ -44,7 +44,8 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library_new = Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
+        let library_new =
+            Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
         let folder_path = path::Path::new("tests/images/").to_path_buf();
         let res = library_new.process_folder(&folder_path).unwrap();
 
@@ -60,10 +61,7 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library_new =
-            Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
-        let folder_path = PathBuf::from("tests/images/");
-        library_new.process_folder(&folder_path).unwrap();
+        Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
 
         // The test here is making sure we can open the library at all.
         Library::open(&config).unwrap();
@@ -78,7 +76,8 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library = Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
+        let library =
+            Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
 
         let folder_path = PathBuf::from("tests/images/");
         library.process_folder(&folder_path).unwrap();

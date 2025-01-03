@@ -3,8 +3,10 @@ use crate::error::LumenzaError;
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 pub struct Config {
+    #[serde(skip)]
+    config_path: String,
     pictures_paths: Vec<String>,
     thumbnails_path: String,
     database_path: String,
@@ -12,32 +14,55 @@ pub struct Config {
 
 // Static methods
 impl Config {
-    pub fn read_config(path: &PathBuf) -> Result<Config, LumenzaError> {
-        let data = fs::read(path).map_err(|_|LumenzaError::IoError())?;
+    pub fn new(
+        config_path: &PathBuf,
+        pictures_paths: &Vec<PathBuf>,
+        thumbnails_path: &PathBuf,
+        database_path: &PathBuf,
+    ) -> Result<Self, LumenzaError> {
+        // Convert all PathBufs to Strings.
+        let mut pictures_strings = Vec::new();
+        for path in pictures_paths {
+            pictures_strings.push(path.as_path().to_str().unwrap().to_string());
+        }
+        let config_string = String::from(config_path.as_path().to_str().unwrap());
+        let thumbnails_string = String::from(thumbnails_path.as_path().to_str().unwrap());
+        let database_string = String::from(database_path.as_path().to_str().unwrap());
+
+        let config = Config {
+            config_path: config_string,
+            pictures_paths: pictures_strings,
+            thumbnails_path: thumbnails_string,
+            database_path: database_string,
+        };
+        config.write_config()?;
+
+        Ok(config)
+    }
+    pub fn open(config_path: &PathBuf) -> Result<Self, LumenzaError> {
+        let data = fs::read(config_path).map_err(|_| LumenzaError::IoError())?;
         let text = String::from_utf8(data)?;
         let config: Config = toml::from_str(&text)?;
         Ok(config)
-    }
-
-    pub fn write_config(
-        config_path: &String,
-        pictures_paths: &Vec<String>,
-        thumbnails_path: &String,
-        database_path: &String,
-    ) -> Result<(), LumenzaError> {
-        let config = Config {
-            pictures_paths: pictures_paths.clone(),
-            thumbnails_path: thumbnails_path.clone(),
-            database_path: database_path.clone(),
-        };
-        let text = toml::to_string(&config)?;
-        std::fs::write(config_path, text).map_err(|_| LumenzaError::IoError())?;
-        Ok(())
     }
 }
 
 // Instance methods
 impl Config {
+    pub fn _read_config(&mut self) -> Result<(), LumenzaError> {
+        let data = fs::read(&self.config_path).map_err(|_|LumenzaError::IoError())?;
+        let text = String::from_utf8(data)?;
+        let config: Config = toml::from_str(&text)?;
+        *self = config;
+        Ok(())
+    }
+
+    pub fn write_config(&self) -> Result<(), LumenzaError> {
+        let text = toml::to_string(&self)?;
+        std::fs::write(&self.config_path, text).map_err(|_| LumenzaError::IoError())?;
+        Ok(())
+    }
+
     pub fn get_pictures_path(&self) -> Vec<PathBuf> {
         // Convert strings to owned pathbufs.
         let mut vec = Vec::new();
@@ -46,7 +71,7 @@ impl Config {
         }
         vec
     }
-    pub fn get_thumbnails_path(&self) -> PathBuf {
+    pub fn _get_thumbnails_path(&self) -> PathBuf {
         PathBuf::from(&self.thumbnails_path)
     }
     pub fn get_database_path(&self) -> PathBuf {

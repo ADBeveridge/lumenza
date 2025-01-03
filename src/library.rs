@@ -1,17 +1,16 @@
 use mime_guess;
+use path_absolutize::Absolutize;
 use std::path::PathBuf;
 use walkdir::WalkDir;
-use path_absolutize::Absolutize;
 
 use crate::error::LumenzaError;
 use crate::picture::Picture;
 use crate::systems::config;
 use crate::systems::database;
-use crate::systems::filesystem;
 
 pub struct Library {
-    pub(crate) _fs: filesystem::Filesystem,
-    pub(crate) db: database::Database,
+    pub(crate) config: config::Config,
+    pub(crate) database: database::Database,
 }
 
 // Static methods.
@@ -23,45 +22,49 @@ impl Library {
         pictures_paths: &Vec<PathBuf>,
         database_path: &PathBuf,
     ) -> Result<Self, LumenzaError> {
-        // Initialize config, database, and file systems.
-        let fs = filesystem::Filesystem::new(config_path, thumbnails_path, pictures_paths)?;
+        // Initialize all files and folders.
         let db = database::Database::new(database_path)?;
+        let cfg = config::Config::new(config_path, pictures_paths, thumbnails_path, database_path)?;
+        std::fs::create_dir_all(thumbnails_path).map_err(|_| LumenzaError::IoError())?;
+        pictures_paths
+            .iter()
+            .map(|folder| {
+                std::fs::create_dir_all(folder).map_err(|_| LumenzaError::IoError())?;
+                Ok(())
+            })
+            .collect::<Result<Vec<()>, LumenzaError>>()?;
 
-        let mut pictures_strs = Vec::new();
-        for path in pictures_paths {
-            pictures_strs.push(path.as_path().to_str().unwrap().to_string());
-        }
-        config::Config::write_config(
-            &config_path.as_path().to_str().unwrap().to_string(),
-            &pictures_strs,
-            &thumbnails_path.as_path().to_str().unwrap().to_string(),
-            &database_path.as_path().to_str().unwrap().to_string(),
-        )?;
-
-        Ok(Library { _fs: fs, db: db })
+        Ok(Library {
+            config: cfg,
+            database: db,
+        })
     }
 
     pub fn open(config_path: &PathBuf) -> Result<Self, LumenzaError> {
-        let config = config::Config::read_config(config_path)?;
+        let cfg = config::Config::open(config_path)?;
+        let db = database::Database::open(&cfg.get_database_path())?;
 
-        let thumbnails_path = config.get_thumbnails_path();
-        let pictures_paths = config.get_pictures_path();
-        let database_path = config.get_database_path();
-
-        let fs = filesystem::Filesystem::open(config_path, &thumbnails_path, &pictures_paths)?;
-        let db = database::Database::open(&database_path)?;
-
-        Ok(Library { _fs: fs, db: db })
+        Ok(Library {
+            config: cfg,
+            database: db,
+        })
     }
 }
 
 // Instance methods.
 impl Library {
     /// Scan a folder for any images that are not in the library yet. If the
-    /// folder is not in the library, it will be added.
+    /// folder is not in the library, it will be added. Pictures that are marked
+    /// as independent but are in the given folder will be marked as children
+    /// of that folder.
     pub fn process_folder(&self, folder: &PathBuf) -> Result<(), LumenzaError> {
         let mut image_paths: Vec<PathBuf> = Vec::new();
         let full_path = folder.absolutize().unwrap_or_default().into_owned();
+
+        let folders = self.config.get_pictures_path();
+        if !folders.iter().any(|x| x == &full_path) {
+            //panic!("Folder not in library");
+        }
 
         let walker = WalkDir::new(full_path)
             .into_iter()
@@ -76,7 +79,7 @@ impl Library {
                 // TODO: Add more image types.
                 if mime.starts_with("image/") {
                     // We know that this is the full file path being pushed into the vector.
-                    image_paths.push(path.clone()); 
+                    image_paths.push(path.clone());
                 }
             }
         }
@@ -106,12 +109,12 @@ impl Library {
     /// List all pictures in the library
     pub fn list_all_pictures(&self) -> Result<Vec<Picture>, LumenzaError> {
         // Only the database is used as a source, as it should be the most up to date.
-        self.db.list_all_pictures()
+        self.database.list_all_pictures()
     }
 
     /// This function is a bit of a one-off, as it will not add the folder
-    /// the picture is in. It will only add the picture itself. This function is 
-    /// intended for callers that want to implement lazy loading of pictures. Use 
+    /// the picture is in. It will only add the picture itself. This function is
+    /// intended for callers that want to implement lazy loading of pictures. Use
     /// process_folder() when finished with adding all pictures manually.
     pub fn add_picture(&self, filename: &PathBuf) -> Result<Picture, LumenzaError> {
         Picture::new(self, &filename)

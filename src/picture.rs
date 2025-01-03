@@ -27,15 +27,15 @@ impl Picture {
         };
 
         // If picture was already in the database, skip insertion.
-        let res = library.db.lookup_picture(&picture)?;
+        let res = library.database.lookup_picture(&picture)?;
         if res == true {
             return Err(LumenzaError::PictureAlreadyInLibrary());
         }
 
-        library.db.write_picture(&picture)?;
+        library.database.write_picture(&picture)?;
 
         // Check if the insert was successful.
-        let res = library.db.lookup_picture(&picture)?;
+        let res = library.database.lookup_picture(&picture)?;
         if res == false {
             return Err(LumenzaError::DatabaseError(rusqlite::Error::InvalidQuery));
         }
