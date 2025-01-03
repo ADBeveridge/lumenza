@@ -16,26 +16,19 @@ pub struct Library {
 // Static methods.
 impl Library {
     /// Create a new library with the given paths. Files and folderes will be 
-    /// created if they do not exist. The thumbnail and picture paths are just
-    /// a suggestion, as the library allows adding photos/thumbnails that are
-    /// outside of the given paths.
+    /// created if they do not exist. The thumbnail path is just a suggestion, 
+    /// as the library allows adding photos/thumbnails that are outside of the 
+    /// given paths. You set picture folders later for the sake of easier 
+    /// integration with GUI applications.
     pub fn create(
         config_path: &PathBuf,
         thumbnails_path: &PathBuf,
-        pictures_paths: &Vec<PathBuf>,
         database_path: &PathBuf,
     ) -> Result<Self, LumenzaError> {
         // Initialize all files and folders.
         let db = database::Database::new(database_path)?;
-        let cfg = config::Config::new(config_path, pictures_paths, thumbnails_path, database_path)?;
+        let cfg = config::Config::new(config_path, &vec![], thumbnails_path, database_path)?;
         std::fs::create_dir_all(thumbnails_path).map_err(|_| LumenzaError::IoError())?;
-        pictures_paths
-            .iter()
-            .map(|folder| {
-                std::fs::create_dir_all(folder).map_err(|_| LumenzaError::IoError())?;
-                Ok(())
-            })
-            .collect::<Result<Vec<()>, LumenzaError>>()?;
 
         Ok(Library {
             config: cfg,
@@ -43,6 +36,9 @@ impl Library {
         })
     }
 
+    /// Open an existing library. The config file must exist, otherwise an error
+    /// will be returned. The database file will be created if it does not exist, 
+    /// and all pictures in the specified folders will be added to the database.
     pub fn open(config_path: &PathBuf) -> Result<Self, LumenzaError> {
         let cfg = config::Config::open(config_path)?;
         let db = database::Database::open(&cfg.get_database_path())?;

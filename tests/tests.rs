@@ -10,14 +10,12 @@ mod tests {
 
         let config = dir.path().join("default.conf");
         let thumbnails = dir.path().join("thumbnails/");
-        let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
+        Library::create(&config, &thumbnails, &database).unwrap();
 
         assert!(std::fs::exists(config).unwrap());
         assert!(std::fs::exists(thumbnails).unwrap());
-        assert!(std::fs::exists(pictures).unwrap());
         assert!(std::fs::exists(database).unwrap());
     }
 
@@ -27,10 +25,9 @@ mod tests {
 
         let config = dir.path().join("default.conf");
         let thumbnails = dir.path().join("thumbnails/");
-        let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library = Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
+        let library = Library::create(&config, &thumbnails, &database).unwrap();
 
         let file = PathBuf::from("tests/images/lake.jpg");
         library.add_picture(&file).unwrap();
@@ -41,11 +38,9 @@ mod tests {
 
         let config = dir.path().join("default.conf");
         let thumbnails = dir.path().join("thumbnails/");
-        let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let mut library_new =
-            Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
+        let mut library_new = Library::create(&config, &thumbnails, &database).unwrap();
         let folder_path = path::Path::new("tests/images/").to_path_buf();
         let res = library_new.process_folder(&folder_path).unwrap();
 
@@ -58,10 +53,9 @@ mod tests {
 
         let config = dir.path().join("default.conf");
         let thumbnails = dir.path().join("thumbnails/");
-        let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
+        Library::create(&config, &thumbnails, &database).unwrap();
 
         // The test here is making sure we can open the library at all.
         Library::open(&config).unwrap();
@@ -73,11 +67,9 @@ mod tests {
 
         let config = dir.path().join("default.conf");
         let thumbnails = dir.path().join("thumbnails/");
-        let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let mut library =
-            Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
+        let mut library = Library::create(&config, &thumbnails, &database).unwrap();
 
         let folder_path = PathBuf::from("tests/images/");
         library.process_folder(&folder_path).unwrap();
@@ -93,11 +85,9 @@ mod tests {
 
         let config = dir.path().join("default.conf");
         let thumbnails = dir.path().join("thumbnails/");
-        let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let mut library =
-            Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
+        let mut library = Library::create(&config, &thumbnails, &database).unwrap();
 
         let folder_path = PathBuf::from("tests/images/");
         library.process_folder(&folder_path).unwrap();
