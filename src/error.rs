@@ -15,25 +15,30 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#[derive(Debug, PartialEq)]
-pub enum Error {
-    DatabaseError(rusqlite::Error),
-    IoError(std::io::ErrorKind),
-    InternalError(InternalError),
-}
+use thiserror::Error;
+use rusqlite;
+use toml;
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum InternalError {
-    /// other error
-    Other = -1000,
-    /// The file is not supported by the library
-    NotAnImage,
-    /// A directory was specified when a non-directory was expected.
-    IsADirectory,
-    /// No name was specified
-    EmptyName,
-    /// Path did not exist
-    PathNotExist,
-    /// Item already in library
-    AlreadyExisted,
+#[derive(Error, Debug, PartialEq)]
+pub enum LumenzaError {
+    #[error("Picture already in library")]
+    PictureAlreadyInLibrary(),
+
+    #[error("File not found")]
+    FileNotFound(),
+
+    #[error("std::io::error occurred")] // std::io::error doesn't implement PartialEq -_-
+    IoError(),
+
+    #[error("Database error: {0}")]
+    DatabaseError(#[from] rusqlite::Error),
+
+    #[error("Serialization error: {0}")]
+    SerializationError(#[from] toml::ser::Error),
+
+    #[error("Deserialization error: {0}")]
+    DeserializationError(#[from] toml::de::Error),
+
+    #[error("UTF-8 error: {0}")]
+    Utf8Error(#[from] std::string::FromUtf8Error),
 }

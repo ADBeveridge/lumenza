@@ -19,8 +19,7 @@ use mime_guess;
 use std::path::PathBuf;
 use walkdir::WalkDir;
 
-use crate::error::Error;
-use crate::error::InternalError;
+use crate::error::LumenzaError;
 use crate::picture;
 use crate::systems::config;
 use crate::systems::database;
@@ -39,7 +38,7 @@ impl Library {
         thumbnails_path: &PathBuf,
         pictures_paths: &Vec<PathBuf>,
         database_path: &PathBuf,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self, LumenzaError> {
         // Initialize config, database, and file systems.
         let fs = filesystem::Filesystem::new(config_path, thumbnails_path, pictures_paths)?;
         let db = database::Database::new(database_path)?;
@@ -58,7 +57,7 @@ impl Library {
         Ok(Library { _fs: fs, db: db })
     }
 
-    pub fn open(config_path: &PathBuf) -> Result<Self, Error> {
+    pub fn open(config_path: &PathBuf) -> Result<Self, LumenzaError> {
         let config = config::Config::read_config(config_path)?;
 
         let thumbnails_path = config.get_thumbnails_path();
@@ -76,7 +75,7 @@ impl Library {
 impl Library {
     /// Scan a folder for any images that are not in the library yet. If the
     /// folder is not in the library, it will be added.
-    pub fn scan_folder(&self, folder: &PathBuf) -> Result<(), Error> {
+    pub fn scan_folder(&self, folder: &PathBuf) -> Result<(), LumenzaError> {
         let mut image_paths: Vec<PathBuf> = Vec::new();
 
         let walker = WalkDir::new(folder)
@@ -104,7 +103,8 @@ impl Library {
                     continue;
                 }
                 Err(err) => {
-                    if err == Error::InternalError(InternalError::AlreadyExisted) {
+                    // Not a fatal error in this case, as we can just skip over the picture.
+                    if err == LumenzaError::PictureAlreadyInLibrary() {
                         println!("Skipping over picture: already in library");
                         continue;
                     } else {
@@ -117,14 +117,14 @@ impl Library {
     }
 
     /// List all pictures in the library
-    pub fn list_all_pictures(&self) -> Result<Vec<picture::Picture>, Error> {
+    pub fn list_all_pictures(&self) -> Result<Vec<picture::Picture>, LumenzaError> {
         // Only the database is used as a source, as it should be the most up to date.
         self.db.list_all_pictures()
     }
 
     /// This function is a bit of a one-off, as it will not add the folder
     /// the picture is in. It will only add the picture itself.
-    pub fn add_picture(&self, filename: &PathBuf) -> Result<(), Error> {
+    pub fn add_picture(&self, filename: &PathBuf) -> Result<(), LumenzaError> {
         picture::Picture::new(self, &filename)?;
         Ok(())
     }

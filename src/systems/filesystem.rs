@@ -17,7 +17,7 @@
 
 use std::path::PathBuf;
 
-use crate::error::Error;
+use crate::error::LumenzaError;
 
 pub struct Filesystem {
     _config_path: PathBuf,
@@ -32,15 +32,15 @@ impl Filesystem {
         config: &PathBuf,
         thumbnails: &PathBuf,
         pictures: &Vec<PathBuf>,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self, LumenzaError> {
         // Create empty folders for a new library. Config file will be created by config system, same with database.
-        std::fs::create_dir_all(PathBuf::from(thumbnails)).unwrap();
+        std::fs::create_dir_all(PathBuf::from(thumbnails)).map_err(|_| LumenzaError::IoError())?;
         for path in pictures {
-            std::fs::create_dir_all(path).unwrap();
+            std::fs::create_dir_all(path).map_err(|_| LumenzaError::IoError())?;
         }
 
         // Now that the files are there, we can create the whole thing.
-        let fs = Self::open(config, thumbnails, pictures).unwrap();
+        let fs = Self::open(config, thumbnails, pictures)?;
 
         Ok(fs)
     }
@@ -50,7 +50,7 @@ impl Filesystem {
         config_path: &PathBuf,
         thumbnails_path: &PathBuf,
         pictures_paths: &Vec<PathBuf>,
-    ) -> Result<Self, Error> {
+    ) -> Result<Self, LumenzaError> {
         return Ok(Filesystem {
             _config_path: config_path.clone(),
             _thumbnails_path: thumbnails_path.clone(),

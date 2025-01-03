@@ -15,7 +15,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-use crate::error::Error;
+use crate::error::LumenzaError;
 
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
@@ -29,10 +29,10 @@ pub struct Config {
 
 // Static methods
 impl Config {
-    pub fn read_config(path: &PathBuf) -> Result<Config, Error> {
-        let data = fs::read(path).unwrap();
-        let text = String::from_utf8(data).unwrap();
-        let config: Config = toml::from_str(&text).unwrap();
+    pub fn read_config(path: &PathBuf) -> Result<Config, LumenzaError> {
+        let data = fs::read(path).map_err(|_|LumenzaError::IoError())?;
+        let text = String::from_utf8(data)?;
+        let config: Config = toml::from_str(&text)?;
         Ok(config)
     }
 
@@ -41,14 +41,14 @@ impl Config {
         pictures_paths: &Vec<String>,
         thumbnails_path: &String,
         database_path: &String,
-    ) -> Result<(), Error> {
+    ) -> Result<(), LumenzaError> {
         let config = Config {
             pictures_paths: pictures_paths.clone(),
             thumbnails_path: thumbnails_path.clone(),
             database_path: database_path.clone(),
         };
-        let text = toml::to_string(&config).unwrap();
-        std::fs::write(config_path, text).unwrap();
+        let text = toml::to_string(&config)?;
+        std::fs::write(config_path, text).map_err(|_| LumenzaError::IoError())?;
         Ok(())
     }
 }

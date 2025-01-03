@@ -17,8 +17,7 @@
 use std::env;
 use std::path::PathBuf;
 
-use crate::error::Error;
-use crate::error::InternalError;
+use crate::error::LumenzaError;
 use crate::library;
 
 pub struct Picture {
@@ -29,7 +28,7 @@ pub struct Picture {
 
 impl Picture {
     /// Create a new picture entry in the library
-    pub(crate) fn new(library: &library::Library, file: &PathBuf) -> Result<Self, Error> {
+    pub(crate) fn new(library: &library::Library, file: &PathBuf) -> Result<Self, LumenzaError> {
         let cwd = env::current_dir().unwrap();
         let full_path;
 
@@ -39,11 +38,11 @@ impl Picture {
         } else {
             full_path = file.to_path_buf();
         }
-        // Make sure the picture exists.
-        if std::fs::exists(full_path.clone()).unwrap() != true {
-            return Err(Error::InternalError(InternalError::PathNotExist));
-        }
 
+        if !std::fs::metadata(full_path.clone()).is_ok() {
+            return Err(LumenzaError::FileNotFound());
+        }
+        
         let picture = Picture {
             id: 0,
             filename: full_path,
@@ -51,17 +50,17 @@ impl Picture {
         };
 
         // If picture was already in the database, skip insertion.
-        let res = library.db.lookup_picture(&picture).unwrap();
+        let res = library.db.lookup_picture(&picture)?;
         if res == true {
-            return Err(Error::InternalError(InternalError::AlreadyExisted));
+            return Err(LumenzaError::PictureAlreadyInLibrary());
         }
 
-        library.db.write_picture(&picture).unwrap();
+        library.db.write_picture(&picture)?;
 
         // Check if the insert was successful.
-        let res = library.db.lookup_picture(&picture).unwrap();
+        let res = library.db.lookup_picture(&picture)?;
         if res == false {
-            return Err(Error::DatabaseError(rusqlite::Error::InvalidQuery));
+            return Err(LumenzaError::DatabaseError(rusqlite::Error::InvalidQuery));
         }
 
         Ok(picture)

@@ -30,13 +30,7 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        Library::create(
-            &config,
-            &thumbnails,
-            &vec![pictures.clone()],
-            &database
-        )
-        .unwrap();
+        Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
 
         assert!(std::fs::exists(config).unwrap());
         assert!(std::fs::exists(thumbnails).unwrap());
@@ -53,13 +47,7 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library = Library::create(
-            &config,
-            &thumbnails,
-            &vec![pictures],
-            &database
-        )
-        .unwrap();
+        let library = Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
 
         let file = PathBuf::from("tests/images/lake.jpg");
         library.add_picture(&file).unwrap();
@@ -73,13 +61,7 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library_new = Library::create(
-            &config,
-            &thumbnails,
-            &vec![pictures],
-            &database
-        )
-        .unwrap();
+        let library_new = Library::create(&config, &thumbnails, &vec![pictures], &database).unwrap();
         let folder_path = path::Path::new("tests/images/").to_path_buf();
         let res = library_new.scan_folder(&folder_path).unwrap();
 
@@ -95,17 +77,12 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library_new = Library::create(
-            &config,
-            &thumbnails,
-            &vec![pictures.clone()],
-            &database
-        )
-        .unwrap();
+        let library_new =
+            Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
         let folder_path = PathBuf::from("tests/images/");
         library_new.scan_folder(&folder_path).unwrap();
 
-        // The test here is making sure we can open the library at all. 
+        // The test here is making sure we can open the library at all.
         Library::open(&config).unwrap();
     }
 
@@ -118,14 +95,8 @@ mod tests {
         let pictures = dir.path().join("pictures/");
         let database = dir.path().join("database.sqlite3");
 
-        let library = Library::create(
-            &config,
-            &thumbnails,
-            &vec![pictures.clone()],
-            &database
-        )
-        .unwrap();
-        
+        let library = Library::create(&config, &thumbnails, &vec![pictures.clone()], &database).unwrap();
+
         let folder_path = PathBuf::from("tests/images/");
         library.scan_folder(&folder_path).unwrap();
 
