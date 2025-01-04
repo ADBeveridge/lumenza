@@ -60,7 +60,7 @@ impl Library {
         let mut image_paths: Vec<PathBuf> = Vec::new();
         let full_path = folder.absolutize().unwrap_or_default().into_owned();
 
-        let folders = self.config.get_pictures_path();
+        let folders = self.config.get_folders_paths();
         if !folders.iter().any(|x| x == &full_path) {
             self.config.add_folder(&full_path)?;
         }
@@ -132,6 +132,11 @@ impl Library {
     /// process_folder() when finished with adding all pictures manually.
     pub fn add_picture(&self, filename: &PathBuf) -> Result<Picture, LumenzaError> {
         Picture::new(self, &filename)
+    }
+
+    /// Get a vector of all multimedia folders.
+    pub fn list_all_folders(&self) -> Vec<PathBuf> {
+        self.config.get_folders_paths()
     }
 }
 
