@@ -47,13 +47,18 @@ impl Picture {
 
 // Instance methods
 impl Picture {
+    /// Get the full filename of the picture
     pub fn get_filename(&self) -> PathBuf {
         self.filename.to_path_buf()
     }
+    /// Set a thumbnail (that can be anywhere) for the picture. This enables clients
+    /// to use other thumbnailing libraries, supporting custom formats, or simply
+    /// just having faster thumbnail generation.
     pub fn set_thumbnail(&mut self, thumbnail: &PathBuf) {
         self.thumbnail = thumbnail.clone();
     }
-    
+
+    /// Default thumbnail generation using the image crate.
     pub(crate) fn generate_thumbnail(&self, thumbnail: &PathBuf) -> Result<(), LumenzaError> {
         // Open the image
         let img = open(&self.filename).map_err(|_| LumenzaError::ImageError())?;

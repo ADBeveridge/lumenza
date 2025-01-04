@@ -106,7 +106,8 @@ impl Library {
     }
 
     /// Generate thumbnails for all pictures in the library. As of right now,
-    /// this function is very inefficient. 
+    /// this function is very inefficient. For now, clients should use target
+    /// platform thumbnailing, and add those thumbnails manually to each photo.
     pub fn generate_all_thumbnails(&self) -> Result<(), LumenzaError> {
         let pictures = self.list_all_pictures()?;
         for picture in pictures {
@@ -119,7 +120,7 @@ impl Library {
         Ok(())
     }
 
-    /// List all pictures in the library
+    /// Returns a vector of all pictures in the library.
     pub fn list_all_pictures(&self) -> Result<Vec<Picture>, LumenzaError> {
         // Only the database is used as a source, as it should be the most up to date.
         self.database.list_all_pictures()
