@@ -29,7 +29,7 @@ mod tests {
 
         let library = Library::create(&config, &thumbnails, &database).unwrap();
 
-        let file = PathBuf::from("tests/images/lake.jpg");
+        let file = PathBuf::from("tests/images/lake.png");
         library.add_picture(&file).unwrap();
     }
     #[test]
@@ -94,7 +94,7 @@ mod tests {
 
         library.generate_all_thumbnails().unwrap();
 
-        let thumbnail = thumbnails.join("lake.jpg");
+        let thumbnail = thumbnails.join("lake.png");
         std::fs::metadata(thumbnail).unwrap();
     }
 }
