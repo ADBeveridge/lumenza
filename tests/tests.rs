@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use lumenza::library::Library;
+    use lumenza::Library;
     use std::path::{self, PathBuf};
     use tempdir::TempDir;
 

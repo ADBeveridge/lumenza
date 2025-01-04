@@ -5,10 +5,16 @@ use std::path::PathBuf;
 use crate::error::LumenzaError;
 use crate::library;
 
+/// Picture management functions
+/// 
+/// Only gives access to select picture attributes that are necessary for 
+/// initial presentation of a photo gallery, etc. The reason for this is 
+/// speed, allowing simpler clients to present data faster. For more complex 
+/// filtering/searching, use the (not yet implemented) filter module.
 pub struct Picture {
-    pub id: u32,
-    pub filename: PathBuf,
-    pub thumbnail: PathBuf,
+    pub(crate) _id: u32,
+    pub(crate) filename: PathBuf,
+    pub(crate) thumbnail: PathBuf,
 }
 
 impl Picture {
@@ -22,7 +28,7 @@ impl Picture {
         }
 
         let picture = Picture {
-            id: 0,
+            _id: 0,
             filename: full_path,
             thumbnail: PathBuf::new(),
         };

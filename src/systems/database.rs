@@ -77,7 +77,7 @@ impl Database {
 
         
             let picture = picture::Picture {
-                id: id,
+                _id: id,
                 filename: PathBuf::from(filename),
                 thumbnail: thumbnail.map(PathBuf::from).unwrap_or_default(),
             };

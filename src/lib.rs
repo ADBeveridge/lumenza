@@ -10,15 +10,18 @@
 //! The subsystems, such as the database engine and the configuration system, 
 //! are managed implicitly. Thumbnailiing can be done by the client, or by 
 //! Lumenza itself. This is useful when the target platform has a specific 
-//! thumbnailing library that is faster, or supports more exotic formats.
+//! thumbnailing library that is faster, or supports more specialized formats.
 
 /// Detailed error representation
 pub mod error;
 
-/// Core management for multimedia library
-pub mod library;
+// Reexport as struct.
+mod library;
+pub use crate::library::Library;
 
-/// Picture management functions
-pub mod picture;
+// Reeexport as struct.
+mod picture;
+pub use crate::picture::Picture;
 
+// Provide access to subsystems only in this crate.
 pub(crate) mod systems;

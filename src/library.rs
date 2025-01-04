@@ -8,6 +8,10 @@ use crate::picture::Picture;
 use crate::systems::config;
 use crate::systems::database;
 
+/// Core management for multimedia libraries
+/// 
+/// Provides access to all subsystems neccessary for management of multimedia
+/// libraries. 
 pub struct Library {
     pub(crate) config: config::Config,
     pub(crate) database: database::Database,
