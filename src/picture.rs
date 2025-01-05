@@ -53,9 +53,20 @@ impl Picture {
 
 // Instance methods
 impl Picture {
-    /// Get the full filename of the picture
+    /// Get the full filename of the picture. 
     pub fn get_filename(&self) -> PathBuf {
         self.filename.to_path_buf()
+    }
+    /// Set new filename for picture. Mostly used when pictures are 
+    /// renamed/moved.
+    pub fn set_filename(&mut self, filename: &PathBuf) -> Result<(), LumenzaError> {
+        // TODO: Check if the file exists.
+        self.filename = filename.clone();
+        Ok(())
+    }
+    /// Get full path to the picture's thumbnail.
+    pub fn get_thumbnail(&self) -> PathBuf {
+        self.thumbnail.to_path_buf()
     }
     /// Set a thumbnail (that can be anywhere) for the picture. This enables clients
     /// to use other thumbnailing libraries, supporting custom formats, or simply

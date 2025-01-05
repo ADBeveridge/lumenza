@@ -11,6 +11,10 @@
 //! are managed implicitly. Thumbnailiing can be done by the client, or by 
 //! Lumenza itself. This is useful when the target platform has a specific 
 //! thumbnailing library that is faster, or supports more specialized formats.
+//! 
+//! Another note is that Lumenza does not interact with thumbnails beyound 
+//! storing the path to the thumbnail, unless requested explicitly by the client.
+//! This means that you can use any type of file as a thumbnail. 
 
 /// Detailed error representation
 pub mod error;

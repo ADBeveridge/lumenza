@@ -59,7 +59,7 @@ impl Library {
     /// Scan a folder for any images that are not in the library yet. If the
     /// folder is not in the library, it will be added. Pictures that are marked
     /// as independent but are in the given folder will be marked as children
-    /// of that folder.
+    /// of that folder. Does not generate thumbnails.
     pub fn process_folder(&mut self, folder: &PathBuf) -> Result<(), LumenzaError> {
         let mut image_paths: Vec<PathBuf> = Vec::new();
         let full_path = folder.absolutize().unwrap_or_default().into_owned();
@@ -124,9 +124,14 @@ impl Library {
         Ok(())
     }
 
-    /// Returns a vector of all pictures in the library.
+    /// Returns a vector of all pictures in the library. Implicitly makes sure
+    /// that all media registered in the database has a corresponding file.
+    /// If the file is missing/moved, the picture will be removed from the 
+    /// database. You will need to run process_folder() or add_picture() to add 
+    /// that picture again. If you know in advance where the picture was moved,
+    /// you can avoid this by using set_filename() on the Picture struct.
     pub fn list_all_pictures(&self) -> Result<Vec<Picture>, LumenzaError> {
-        // Only the database is used as a source, as it should be the most up to date.
+        // TODO: Filter out pictures that don't have a corresponding file.
         self.database.list_all_pictures()
     }
 
